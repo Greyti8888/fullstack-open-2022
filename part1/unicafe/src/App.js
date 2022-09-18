@@ -6,7 +6,8 @@ const Stats = ({ text, value }) => <div>{text} {value}</div>
 
 const Statistics = ({ data }) => {
   const { good, neutral, bad, all, avg, positive } = data
-  return (
+  if (all === 0) return <p>No feedback given</p>
+  else return (
     <>
       <Stats text={'good'} value={good} />
       <Stats text={'neutral'} value={neutral} />
@@ -16,6 +17,7 @@ const Statistics = ({ data }) => {
       <Stats text={'positive'} value={positive} />
     </>
   )
+
 }
 
 const App = () => {
