@@ -1,33 +1,63 @@
 import { useState } from 'react'
 
 const Header = ({ text }) => <h1>{text}</h1>
-const Button = ({ text, handleClick }) => <button onClick={handleClick}>{text}</button>
-const Display = ({ good, neutral, bad }) => (
-  <>
-    <Count text={'good'} value={good} />
-    <Count text={'neutral'} value={neutral} />
-    <Count text={'bad'} value={bad} />
-  </>
-)
-const Count = ({ text, value }) => <div>{text} {value}</div>
+const Button = ({ text, handleClick }) => <button onClick={handleClick(text)}>{text}</button>
+const Stats = ({ text, value }) => <div>{text} {value}</div>
 
 const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
+  const [all, setAll] = useState(0)
+  const [avg, setAvg] = useState(0)
+  const [positive, setPositive] = useState(0)
 
-  const handleGoodClick = () => setGood(good + 1)
-  const handleNeutralClick = () => setNeutral(neutral + 1)
-  const handleBadClick = () => setBad(bad + 1)
+  const calcAvg = (good, bad, all) => (good * 1 + bad * -1) / all
+  const calcPositive = (good, all) => (good / all) * 100
+
+  const handleClick = (key) => {
+    return () => {
+      let newValue
+      let newAvg
+      let newAll = all + 1
+      let newPositive
+      setAll(newAll)
+      if (key === 'good') {
+        newValue = good + 1
+        setGood(newValue)
+        newAvg = calcAvg(newValue, bad, newAll)
+        newPositive = calcPositive(newValue, newAll)
+      }
+      if (key === 'neutral') {
+        newValue = neutral + 1
+        setNeutral(newValue)
+        newAvg = calcAvg(good, bad, newAll)
+        newPositive = calcPositive(good, newAll)
+      }
+      if (key === 'bad') {
+        newValue = bad + 1
+        setBad(newValue)
+        newAvg = calcAvg(good, newValue, newAll)
+        newPositive = calcPositive(good, newAll)
+      }
+      setAvg(newAvg)
+      setPositive(newPositive)
+    }
+  }
 
   return (
     <div>
       <Header text={'give feedback'} />
-      <Button text={'good'} handleClick={handleGoodClick} />
-      <Button text={'neutral'} handleClick={handleNeutralClick} />
-      <Button text={'bad'} handleClick={handleBadClick} />
+      <Button text={'good'} handleClick={handleClick} />
+      <Button text={'neutral'} handleClick={handleClick} />
+      <Button text={'bad'} handleClick={handleClick} />
       <Header text={'statistics'} />
-      <Display good={good} neutral={neutral} bad={bad} />
+      <Stats text={'good'} value={good} />
+      <Stats text={'neutral'} value={neutral} />
+      <Stats text={'bad'} value={bad} />
+      <Stats text={'all'} value={all} />
+      <Stats text={'average'} value={avg} />
+      <Stats text={'positive'} value={positive} />
     </div>
   )
 }
