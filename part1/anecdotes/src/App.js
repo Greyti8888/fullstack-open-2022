@@ -24,7 +24,6 @@ const App = () => {
     let newSelected
     do {
       newSelected = rng(anecdotes.length)
-      console.log(selected, newSelected, selected === newSelected)
     } while (newSelected === selected)
     setSelected(newSelected)
   }
