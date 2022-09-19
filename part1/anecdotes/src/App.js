@@ -1,5 +1,10 @@
 import { useState } from 'react'
 
+const Votes = ({ votes }) => <div>has {votes} votes</div>
+const Anecdote = ({ anecdote }) => <div>{anecdote}</div>
+
+const rng = (max) => Math.floor(Math.random() * max)
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -11,26 +16,38 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.'
   ]
 
-  const [selected, setSelected] = useState(0)
+  const [selected, setSelected] = useState(rng(anecdotes.length))
   const [poins, setPoints] = useState(Array(anecdotes.length).fill(0))
+  const [top, setTop] = useState(rng(anecdotes.length))
 
-  const handleNext = () => setSelected(Math.floor(Math.random() * anecdotes.length))
+  const handleNext = () => {
+    let newSelected
+    do {
+      newSelected = rng(anecdotes.length)
+      console.log(selected, newSelected, selected === newSelected)
+    } while (newSelected === selected)
+    setSelected(newSelected)
+  }
+
   const handleVote = () => {
     const newPoints = [...poins]
     newPoints[selected] += 1
     setPoints(newPoints)
+    const max = Math.max(...newPoints)
+    const newTop = newPoints.indexOf(max)
+    setTop(newTop)
   }
 
   return (
     <>
-      <div>
-        {anecdotes[selected]}
-      </div>
-      <div>
-        has {poins[selected]} votes
-      </div>
+      <h1>Anecdote of the day</h1>
+      <Anecdote anecdote={anecdotes[selected]} />
+      <Votes votes={poins[selected]} />
       <button onClick={handleVote}>vote</button>
       <button onClick={handleNext}>next anecdote</button>
+      <h1>Anecdote with most votes</h1>
+      <Anecdote anecdote={anecdotes[top]} />
+      <Votes votes={poins[top]} />
     </>
   )
 }
