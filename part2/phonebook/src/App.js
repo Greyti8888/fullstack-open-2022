@@ -8,6 +8,11 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    const exists = persons.find(person => person.name === newName)
+    if (exists) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }
     setPersons([...persons, { name: newName }])
     setNewName('')
   }
