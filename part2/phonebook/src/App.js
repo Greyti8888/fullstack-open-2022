@@ -1,24 +1,8 @@
 import { useState } from 'react'
 
-const Contacts = ({ persons, filter }) => {
-  const output = persons.reduce((valid, person) => {
-    const filterPassed = !filter || person.name.toLowerCase().includes(filter)
-    if (filterPassed) valid.push(<div key={person.name}>{person.name} {person.number}</div>)
-    return valid
-  }, [])
-
-  return (
-    <div>
-      {output}
-    </div>
-  )
-}
-
-const Filter = ({ filter, handleFilter }) => {
-  return (
-    <input value={filter} onChange={handleFilter} />
-  )
-}
+import PersonForm from './components/PersonForm'
+import Filter from './components/Filter'
+import Persons from './components/Persons'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -33,6 +17,10 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (!newName || !newNumber) {
+      alert('Enter name and number')
+      return
+    }
     const exists = persons.find(person => person.name === newName)
     if (exists) {
       alert(`${newName} is already added to phonebook`)
@@ -52,28 +40,17 @@ const App = () => {
   }
 
   const handleFilter = (e) => {
-    console.log(typeof e.target.value);
     setFilter(e.target.value.toLowerCase())
   }
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
       <Filter filter={filter} handleFilter={handleFilter} />
       <h2>add a new</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          name: <input value={newName} onChange={handleName} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handlePhone} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm name={newName} number={newNumber} handleName={handleName} handlePhone={handlePhone} handleSubmit={handleSubmit} />
       <h2>Numbers</h2>
-      <Contacts persons={persons} filter={filter} />
+      <Persons persons={persons} filter={filter} />
     </div>
   )
 }
