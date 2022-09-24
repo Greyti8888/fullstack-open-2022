@@ -52,9 +52,12 @@ const App = () => {
   }
 
   const handleDelete = (id) => {
-    personsService
-      .remove(id)
-      .then(() => setPersons(persons.filter(person => person.id !== id)))
+    const person = persons.find(person => person.id === id)
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      personsService
+        .remove(id)
+        .then(() => setPersons(persons.filter(person => person.id !== id)))
+    }
   }
 
   return (
