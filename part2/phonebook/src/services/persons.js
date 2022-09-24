@@ -12,5 +12,9 @@ const add = (newPerson) => {
     .then(res => res.data)
 }
 
+const remove = (id) => {
+  return axios.delete(`http://localhost:3001/persons/${id}`)
+}
+
 /* eslint import/no-anonymous-default-export: [2, {"allowObject": true}] */
-export default { getAll, add }
+export default { getAll, add, remove }

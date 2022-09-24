@@ -51,6 +51,12 @@ const App = () => {
     setFilter(e.target.value.toLowerCase())
   }
 
+  const handleDelete = (id) => {
+    personsService
+      .remove(id)
+      .then(() => setPersons(persons.filter(person => person.id !== id)))
+  }
+
   return (
     <div>
       <h1>Phonebook</h1>
@@ -58,7 +64,7 @@ const App = () => {
       <h2>add a new</h2>
       <PersonForm name={newName} number={newNumber} handleName={handleName} handlePhone={handlePhone} handleSubmit={handleSubmit} />
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} />
+      <Persons persons={persons} filter={filter} handleDelete={handleDelete} />
     </div>
   )
 }
