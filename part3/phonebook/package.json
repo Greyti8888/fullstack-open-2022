@@ -2,11 +2,15 @@
   "name": "phonebook",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "build/index.html",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rmdir /s /q build && cd ../../part2/phonebook/ && npm run build && Xcopy /S /I /E build ..\\..\\part3\\phonebook\\build",
+    "deploy": "flyctl deploy",
+    "deploy:full": "npm run build:ui && npm run deploy",    
+    "logs:prod": "flyctl logs"
   },
   "author": "",
   "license": "ISC",
