@@ -1,6 +1,10 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors');
+const mongoose = require('mongoose')
+
+const Person = require('./models/person')
 
 const app = express()
 
@@ -37,7 +41,11 @@ let persons = [
 app.get('/', (req, res) => res.send("App in running"))
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person
+    .find({})
+    .then(persons => {
+      return res.json(persons)
+    })
 })
 
 app.get('/api/persons/:id', (req, res) => {
