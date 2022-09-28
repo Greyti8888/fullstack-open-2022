@@ -1,5 +1,5 @@
-#@url = http://localhost:3001
-@url = https://throbbing-wood-7776.fly.dev
+@url = http://localhost:3001
+#@url = https://throbbing-wood-7776.fly.dev
 
 # Get All persons
 GET {{url}}/api/persons HTTP/1.1
@@ -19,5 +19,15 @@ content-type: application/json
 
 {
     "name": "test2",
+    "number": 123
+}
+
+###
+# Update person
+PUT {{url}}/api/persons/633443d5225ebceb4debf975 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "test",
     "number": 123
 }

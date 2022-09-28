@@ -87,6 +87,25 @@ app.post('/api/persons', (req, res, next) => {
   }
 })
 
+app.put('/api/persons/:id', (req, res, next) => {
+  try {
+    const { name, number } = req.body
+
+    if (!name) throw Error('Missing name')
+    if (!number) throw Error('Missing number')
+
+    const person = {
+      name,
+      number
+    }
+
+    Person.findByIdAndUpdate(req.params.id, person, { new: true })
+      .then(updatedPerson => res.json(updatedPerson))
+  } catch (err) {
+    next(err)
+  }
+})
+
 app.delete('/api/persons/:id', (req, res, next) => {
   try {
     Person.findByIdAndRemove(req.params.id)
