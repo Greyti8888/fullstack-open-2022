@@ -46,9 +46,9 @@ const customError = (name, message) => {
 
 app.get('/', (req, res) => res.send("App in running"))
 
-app.get('/api/persons', (req, res, next) => {
+app.get('/api/persons', async (req, res, next) => {
   try {
-    Person
+    await Person
       .find({})
       .then(persons => {
         return res.json(persons)
@@ -58,18 +58,19 @@ app.get('/api/persons', (req, res, next) => {
   }
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', async (req, res, next) => {
   try {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) res.json(person)
-    else throw Error()
+    await Person.findById(req.params.id)
+      .then(person => {
+        if (person) return res.json(person)
+        else throw Error('No person found')
+      })
   } catch (err) {
     next(err)
   }
 })
 
-app.post('/api/persons', (req, res, next) => {
+app.post('/api/persons', async (req, res, next) => {
   try {
     const { name, number } = req.body
 
@@ -81,13 +82,13 @@ app.post('/api/persons', (req, res, next) => {
       number
     })
 
-    person.save().then(person => res.json(person))
+    await person.save().then(person => res.json(person))
   } catch (err) {
     next(err)
   }
 })
 
-app.put('/api/persons/:id', (req, res, next) => {
+app.put('/api/persons/:id', async (req, res, next) => {
   try {
     const { name, number } = req.body
 
@@ -99,29 +100,37 @@ app.put('/api/persons/:id', (req, res, next) => {
       number
     }
 
-    Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    await Person.findByIdAndUpdate(req.params.id, person, { new: true })
       .then(updatedPerson => res.json(updatedPerson))
   } catch (err) {
     next(err)
   }
 })
 
-app.delete('/api/persons/:id', (req, res, next) => {
+app.delete('/api/persons/:id', async (req, res, next) => {
   try {
-    Person.findByIdAndRemove(req.params.id)
+    await Person.findByIdAndRemove(req.params.id)
       .then(() => res.status(204).end())
   } catch (err) {
     next(err)
   }
 })
 
-app.get('/info', (req, res) => {
-  res.send(
-    `<div>
-      <p>Phonebook has info for ${persons.length} people</p>
-      <p>${new Date()}</p>
-    </div>`
-  )
+app.get('/info', async (req, res) => {
+  try {
+    await Person
+      .find({})
+      .then(persons => {
+        return res.send(
+          `<div>
+            <p>Phonebook has info for ${persons.length} people</p>
+            <p>${new Date()}</p>
+          </div>`
+        )
+      })
+  } catch (err) {
+    next(err)
+  }
 })
 
 const unknownEndpoint = (req, res) => {
@@ -136,7 +145,7 @@ const errorHandler = (err, req, res, next) => {
   if (err.message === 'Missing name') return res.status(400).json({ error: 'name missing' })
   if (err.message === 'Missing number') return res.status(400).json({ error: 'number missing' })
 
-  if (error.name === 'CastError') return res.status(400).json({ error: 'malformatted id' })
+  if (err.name === 'CastError') return res.status(400).json({ error: 'malformatted id' })
 
   res.status(404).end()
 }
