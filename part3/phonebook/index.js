@@ -38,48 +38,62 @@ let persons = [
   }
 ]
 
+const customError = (name, message) => {
+  const err = new Error(message)
+  err.name = name
+  return err
+}
+
 app.get('/', (req, res) => res.send("App in running"))
 
-app.get('/api/persons', (req, res) => {
-  Person
-    .find({})
-    .then(persons => {
-      return res.json(persons)
-    })
+app.get('/api/persons', (req, res, next) => {
+  try {
+    Person
+      .find({})
+      .then(persons => {
+        return res.json(persons)
+      })
+  } catch (err) {
+    next(err)
+  }
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(person => person.id === id)
-  if (person) res.json(person)
-  else res.status(404).end()
+  try {
+    const id = Number(req.params.id)
+    const person = persons.find(person => person.id === id)
+    if (person) res.json(person)
+    else throw Error()
+  } catch (err) {
+    next(err)
+  }
 })
 
-app.post('/api/persons', (req, res) => {
-  const { name, number } = req.body
+app.post('/api/persons', (req, res, next) => {
+  try {
+    const { name, number } = req.body
 
-  if (!name) {
-    return res.status(400).json({
-      error: 'name missing'
+    if (!name) throw Error('Missing name')
+    if (!number) throw Error('Missing number')
+
+    const person = new Person({
+      name,
+      number
     })
-  }
-  if (!number) {
-    return res.status(400).json({
-      error: 'number missing'
-    })
-  }
 
-  const person = new Person({
-    name,
-    number
-  })
-
-  person.save().then(person => res.json(person))
+    person.save().then(person => res.json(person))
+  } catch (err) {
+    next(err)
+  }
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  Person.findByIdAndRemove(req.params.id)
-    .then(() => res.status(204).end())
+app.delete('/api/persons/:id', (req, res, next) => {
+  try {
+    Person.findByIdAndRemove(req.params.id)
+      .then(() => res.status(204).end())
+  } catch (err) {
+    next(err)
+  }
 })
 
 app.get('/info', (req, res) => {
@@ -90,6 +104,27 @@ app.get('/info', (req, res) => {
     </div>`
   )
 })
+
+const unknownEndpoint = (req, res) => {
+  res.status(404).json({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (err, req, res, next) => {
+  console.error(err.message)
+
+  if (err.message === 'Missing name') return res.status(400).json({ error: 'name missing' })
+  if (err.message === 'Missing number') return res.status(400).json({ error: 'number missing' })
+
+  if (error.name === 'CastError') return res.status(400).json({ error: 'malformatted id' })
+
+  res.status(404).end()
+}
+
+app.use(errorHandler)
+
+
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
