@@ -68,6 +68,13 @@ const App = () => {
           setNotification(null)
         }, 5000)
       })
+      .catch(err => {
+        setNotification(err.response.data.error)
+        setNotificationType('error')
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+      })
   }
 
   const handleName = (e) => {

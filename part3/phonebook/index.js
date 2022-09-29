@@ -100,7 +100,7 @@ app.put('/api/persons/:id', async (req, res, next) => {
       number
     }
 
-    await Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    await Person.findByIdAndUpdate(req.params.id, person, { new: true, runValidators: true, context: 'query' })
       .then(updatedPerson => res.json(updatedPerson))
   } catch (err) {
     next(err)
@@ -142,12 +142,12 @@ app.use(unknownEndpoint)
 const errorHandler = (err, req, res, next) => {
   console.error(err.message)
 
-  if (err.message === 'Missing name') return res.status(400).json({ error: 'name missing' })
-  if (err.message === 'Missing number') return res.status(400).json({ error: 'number missing' })
+  if (err.message === 'Missing name') res.status(400).json({ error: 'name missing' })
+  else if (err.message === 'Missing number') res.status(400).json({ error: 'number missing' })
+  else if (err.name === 'CastError') res.status(400).json({ error: 'malformatted id' })
+  else if (err.name === 'ValidationError') res.status(400).json({ error: err.message })
+  else res.status(404).end()
 
-  if (err.name === 'CastError') return res.status(400).json({ error: 'malformatted id' })
-
-  res.status(404).end()
 }
 
 app.use(errorHandler)
