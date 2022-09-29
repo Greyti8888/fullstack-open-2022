@@ -10,11 +10,15 @@ mongoose
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
-    minLength: 3,
+    minLength: [3, `Must have length of 3 or more`],
     required: true
   },
   number: {
     type: String,
+    validate: {
+      validator: (v) => /^\d{2,3}-\d{6,}/.test(v),
+      message: 'Must have length of 8 or more, and match pattern 12-123456 or 123-123456'
+    },
     required: true
   }
 })

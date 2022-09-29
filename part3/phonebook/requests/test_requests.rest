@@ -18,8 +18,8 @@ POST {{url}}/api/persons/ HTTP/1.1
 content-type: application/json
 
 {
-    "name": "test2",
-    "number": 123
+    "name": "t",
+    "number": "12345678"
 }
 
 ###

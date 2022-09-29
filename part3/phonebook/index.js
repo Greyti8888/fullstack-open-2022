@@ -77,6 +77,12 @@ app.post('/api/persons', async (req, res, next) => {
     if (!name) throw Error('Missing name')
     if (!number) throw Error('Missing number')
 
+    await Person
+      .find({ name: name })
+      .then(person => {
+        if (person[0]) throw Error('Person already exists')
+      })
+
     const person = new Person({
       name,
       number
@@ -144,6 +150,7 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.message === 'Missing name') res.status(400).json({ error: 'name missing' })
   else if (err.message === 'Missing number') res.status(400).json({ error: 'number missing' })
+  else if (err.message === 'Person already exists') res.status(400).json({ error: 'person already exists' })
   else if (err.name === 'CastError') res.status(400).json({ error: 'malformatted id' })
   else if (err.name === 'ValidationError') res.status(400).json({ error: err.message })
   else res.status(404).end()
