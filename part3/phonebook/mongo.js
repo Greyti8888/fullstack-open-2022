@@ -25,7 +25,7 @@ if (!name || !number) {
       Person
         .find({})
         .then(persons => {
-          console.log('phonebook:');
+          console.log('phonebook:')
           persons.forEach(person => console.log(person.name, person.number))
           return mongoose.connection.close()
         })
