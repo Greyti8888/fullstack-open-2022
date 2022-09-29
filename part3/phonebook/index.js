@@ -107,7 +107,10 @@ app.put('/api/persons/:id', async (req, res, next) => {
     }
 
     await Person.findByIdAndUpdate(req.params.id, person, { new: true, runValidators: true, context: 'query' })
-      .then(updatedPerson => res.json(updatedPerson))
+      .then(updatedPerson => {
+        if (updatedPerson) res.json(updatedPerson)
+        else throw Error('No person to update')
+      })
   } catch (err) {
     next(err)
   }
@@ -151,9 +154,10 @@ const errorHandler = (err, req, res, next) => {
   if (err.message === 'Missing name') res.status(400).json({ error: 'name missing' })
   else if (err.message === 'Missing number') res.status(400).json({ error: 'number missing' })
   else if (err.message === 'Person already exists') res.status(400).json({ error: 'person already exists' })
+  else if (err.message === 'No person to update') res.status(400).json({ error: 'no person to update' })
   else if (err.name === 'CastError') res.status(400).json({ error: 'malformatted id' })
   else if (err.name === 'ValidationError') res.status(400).json({ error: err.message })
-  else res.status(404).end()
+  else next(err)
 
 }
 
