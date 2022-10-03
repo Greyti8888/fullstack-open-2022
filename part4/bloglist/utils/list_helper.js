@@ -1,7 +1,10 @@
-const dummy = (blogs) => {
-  return 1
+const totalLikes = (blogs) => {
+  const output = blogs.reduce((total, blog) => {
+    return total += blog.likes
+  }, 0)
+  return output
 }
 
 module.exports = {
-  dummy
+  totalLikes
 }
