@@ -1,0 +1,16 @@
+@url = http://localhost:3003
+
+# Get All blogs
+GET {{url}}/api/blogs HTTP/1.1
+
+###
+# Add blog
+POST {{url}}/api/blogs/ HTTP/1.1
+content-type: application/json
+
+{
+  "title": "title1",
+  "author": "a1",
+  "url": "url1",
+  "likes": 0
+}
