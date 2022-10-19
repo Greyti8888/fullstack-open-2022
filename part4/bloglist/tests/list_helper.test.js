@@ -123,3 +123,29 @@ describe('most blogs', () => {
     expect(result).toEqual(controlValue)
   })
 })
+
+describe('most likes', () => {
+
+  test('when list has no blogs', () => {
+    const result = listHelper.mostLikes([])
+    expect(result).toEqual(null)
+  })
+
+  test('when list has only one blog', () => {
+    const result = listHelper.mostLikes(listWithOneBlog)
+    const controlValue = {
+      author: listWithOneBlog[0].author,
+      'likes': 5
+    }
+    expect(result).toEqual(controlValue)
+  })
+
+  test('when list has multiple blogs', () => {
+    const result = listHelper.mostLikes(listWithSixBlogs)
+    const controlValue = {
+      author: listWithSixBlogs[1].author,
+      'likes': 17
+    }
+    expect(result).toEqual(controlValue)
+  })
+})
