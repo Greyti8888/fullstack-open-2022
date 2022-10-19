@@ -97,3 +97,29 @@ describe('favorite blog', () => {
     expect(result).toEqual(listWithSixBlogs[2])
   })
 })
+
+describe('most blogs', () => {
+
+  test('when list has no blogs', () => {
+    const result = listHelper.mostBlogs([])
+    expect(result).toEqual(null)
+  })
+
+  test('when list has only one blog', () => {
+    const result = listHelper.mostBlogs(listWithOneBlog)
+    const controlValue = {
+      author: listWithOneBlog[0].author,
+      'blogs': 1
+    }
+    expect(result).toEqual(controlValue)
+  })
+
+  test('when list has multiple blogs', () => {
+    const result = listHelper.mostBlogs(listWithSixBlogs)
+    const controlValue = {
+      author: listWithSixBlogs[3].author,
+      'blogs': 3
+    }
+    expect(result).toEqual(controlValue)
+  })
+})
