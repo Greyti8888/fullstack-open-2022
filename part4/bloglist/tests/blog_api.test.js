@@ -53,25 +53,54 @@ test('blogs have "id" property', async () => {
   }
 })
 
-test('can create blog', async () => {
-  const newBlog = {
-    'title': 'Can create blog(test)',
-    'author': 'someAuthor',
-    'url': 'someUrl',
-    'likes': 0
-  }
+describe('blog creating', () => {
+  test('can create blog', async () => {
+    const newBlog = {
+      'title': 'Can create blog(test)',
+      'author': 'someAuthor',
+      'url': 'someUrl',
+      'likes': 0
+    }
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-  const response2 = await api.get('/api/blogs')
-  const titles = response2.body.map(blog => blog.title)
+    const response2 = await api.get('/api/blogs')
+    const titles = response2.body.map(blog => blog.title)
 
-  expect(response2.body).toHaveLength(initialBlogs.length + 1)
-  expect(titles).toContain(newBlog.title)
+    expect(response2.body).toHaveLength(initialBlogs.length + 1)
+    expect(titles).toContain(newBlog.title)
+  })
+
+  test('missing title', async () => {
+    const newBlog = {
+      'author': 'someAuthor',
+      'url': 'someUrl',
+      'likes': 0
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+  })
+
+  test('missing url', async () => {
+    const newBlog = {
+      'title': 'someTitle',
+      'author': 'someAuthor',
+      'likes': 0
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+  })
 })
 
 test('likes defaults to 0 if missing', async () => {
