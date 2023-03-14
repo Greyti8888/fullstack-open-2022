@@ -74,7 +74,7 @@ test('can create blog', async () => {
   expect(titles).toContain(newBlog.title)
 })
 
-test.only('likes defaults to 0 if missing', async () => {
+test('likes defaults to 0 if missing', async () => {
   const newBlog = {
     'title': 'Missing likes(test)',
     'author': 'someAuthor',
