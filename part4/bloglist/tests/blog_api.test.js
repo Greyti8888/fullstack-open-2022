@@ -34,27 +34,29 @@ beforeEach(async () => {
 
 const api = supertest(app)
 
-test('all blogs are returned', async () => {
-  const response = await api.get('/api/blogs')
-  expect(response.body).toHaveLength(initialBlogs.length)
+describe('when some blogs exist', () => {
+  test('all blogs are returned', async () => {
+    const response = await api.get('/api/blogs')
+    expect(response.body).toHaveLength(initialBlogs.length)
+  })
+
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('blogs have "id" property', async () => {
+    const response = await api.get('/api/blogs')
+    for (let blog of response.body) {
+      expect(blog.id).toBeDefined()
+    }
+  })
 })
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-})
-
-test('blogs have "id" property', async () => {
-  const response = await api.get('/api/blogs')
-  for (let blog of response.body) {
-    expect(blog.id).toBeDefined()
-  }
-})
-
-describe('blog creating', () => {
-  test('can create blog', async () => {
+describe('creating a blog', () => {
+  test('succeeded with valid data', async () => {
     const newBlog = {
       'title': 'Can create blog(test)',
       'author': 'someAuthor',
@@ -75,7 +77,7 @@ describe('blog creating', () => {
     expect(titles).toContain(newBlog.title)
   })
 
-  test('missing title', async () => {
+  test('fails with 400 if missing title', async () => {
     const newBlog = {
       'author': 'someAuthor',
       'url': 'someUrl',
@@ -89,7 +91,7 @@ describe('blog creating', () => {
 
   })
 
-  test('missing url', async () => {
+  test('fails with 400 if missing url', async () => {
     const newBlog = {
       'title': 'someTitle',
       'author': 'someAuthor',
@@ -101,25 +103,39 @@ describe('blog creating', () => {
       .send(newBlog)
       .expect(400)
   })
+
+  test('likes defaults to 0 if missing', async () => {
+    const newBlog = {
+      'title': 'Missing likes(test)',
+      'author': 'someAuthor',
+      'url': 'someUrl',
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const blog = response.body.find(blog => blog.title === newBlog.title)
+    expect(blog.likes).toBe(0)
+  })
 })
 
-test('likes defaults to 0 if missing', async () => {
-  const newBlog = {
-    'title': 'Missing likes(test)',
-    'author': 'someAuthor',
-    'url': 'someUrl',
-  }
+describe('deletion of a blog', () => {
+  test('succeeds if "id" is valid', async () => {
+    const response = await api.get('/api/blogs')
+    const blog = response.body[0]
+    await api
+      .delete(`/api/blogs/${blog.id}`)
+      .expect(204)
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
-
-  const response = await api.get('/api/blogs')
-  const blog = response.body.find(blog => blog.title === newBlog.title)
-  expect(blog.likes).toBe(0)
+    const response2 = await api.get('/api/blogs')
+    expect(response2.body).toHaveLength(initialBlogs.length - 1)
+  })
 })
+
 
 afterAll(async () => {
   mongoose.connection.close()
