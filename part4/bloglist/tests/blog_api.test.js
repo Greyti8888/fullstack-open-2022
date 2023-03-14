@@ -53,7 +53,7 @@ test('blogs have "id" property', async () => {
   }
 })
 
-test.only('can create blog', async () => {
+test('can create blog', async () => {
   const newBlog = {
     'title': 'Can create blog(test)',
     'author': 'someAuthor',
@@ -72,6 +72,24 @@ test.only('can create blog', async () => {
 
   expect(response2.body).toHaveLength(initialBlogs.length + 1)
   expect(titles).toContain(newBlog.title)
+})
+
+test.only('likes defaults to 0 if missing', async () => {
+  const newBlog = {
+    'title': 'Missing likes(test)',
+    'author': 'someAuthor',
+    'url': 'someUrl',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const blog = response.body.find(blog => blog.title === newBlog.title)
+  expect(blog.likes).toBe(0)
 })
 
 afterAll(async () => {
