@@ -53,6 +53,27 @@ test('blogs have "id" property', async () => {
   }
 })
 
+test.only('can create blog', async () => {
+  const newBlog = {
+    'title': 'Can create blog(test)',
+    'author': 'someAuthor',
+    'url': 'someUrl',
+    'likes': 0
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response2 = await api.get('/api/blogs')
+  const titles = response2.body.map(blog => blog.title)
+
+  expect(response2.body).toHaveLength(initialBlogs.length + 1)
+  expect(titles).toContain(newBlog.title)
+})
+
 afterAll(async () => {
   mongoose.connection.close()
 })
