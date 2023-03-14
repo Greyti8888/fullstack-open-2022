@@ -124,7 +124,7 @@ describe('creating a blog', () => {
 })
 
 describe('deletion of a blog', () => {
-  test('succeeds if "id" is valid', async () => {
+  test.only('succeeds if "id" is valid', async () => {
     const response = await api.get('/api/blogs')
     const blog = response.body[0]
     await api
@@ -136,6 +136,24 @@ describe('deletion of a blog', () => {
   })
 })
 
+describe('update of a blog', () => {
+  test('succeeds if "id" is valid', async () => {
+    const update = {
+      likes: 999
+    }
+    const response = await api.get('/api/blogs')
+    const blogToUpdate = response.body[0]
+
+    await api
+      .patch(`/api/blogs/${blogToUpdate.id}`)
+      .send(update)
+      .expect(204)
+
+    const response2 = await api.get('/api/blogs')
+    const updatedBlog = response2.body.find(blog => blog.id === blogToUpdate.id)
+    expect(updatedBlog.likes).toBe(update.likes)
+  })
+})
 
 afterAll(async () => {
   mongoose.connection.close()
