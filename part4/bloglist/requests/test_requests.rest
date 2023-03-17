@@ -4,6 +4,7 @@
 GET {{url}}/api/blogs HTTP/1.1
 
 ###
+
 # Add blog
 POST {{url}}/api/blogs/ HTTP/1.1
 content-type: application/json
@@ -13,4 +14,21 @@ content-type: application/json
   "author": "a1",
   "url": "url1",
   "likes": 0
+}
+
+###
+
+# Get All users
+GET {{url}}/api/users HTTP/1.1
+
+###
+
+# Add user
+POST {{url}}/api/users/ HTTP/1.1
+content-type: application/json
+
+{
+  "username": "tester",
+  "name": "root",
+  "password": "qwerty"
 }
