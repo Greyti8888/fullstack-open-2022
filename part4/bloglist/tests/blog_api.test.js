@@ -70,10 +70,10 @@ describe('creating a blog', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
-    const response2 = await api.get('/api/blogs')
-    const titles = response2.body.map(blog => blog.title)
+    const response = await api.get('/api/blogs')
+    const titles = response.body.map(blog => blog.title)
 
-    expect(response2.body).toHaveLength(initialBlogs.length + 1)
+    expect(response.body).toHaveLength(initialBlogs.length + 1)
     expect(titles).toContain(newBlog.title)
   })
 

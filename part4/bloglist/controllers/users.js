@@ -11,6 +11,16 @@ usersRouter.get('/', async (req, res) => {
 usersRouter.post('/', async (req, res) => {
   const { username, name, password } = req.body
 
+  const minPassword = 3
+
+  if (!password) {
+    return res.status(400).json({ error: '`password` is missing' })
+  }
+
+  if (password.length < minPassword) {
+    return res.status(400).json({ error: `\`password\` length is less than ${minPassword}` })
+  }
+
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
 
@@ -19,7 +29,7 @@ usersRouter.post('/', async (req, res) => {
     name,
     passwordHash
   })
-  console.log(newUser)
+
   const result = await newUser.save()
   res.status(201).json(result)
 })

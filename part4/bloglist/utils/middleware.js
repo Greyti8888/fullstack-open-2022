@@ -14,6 +14,14 @@ const unknownEndpoint = (request, response) => {
 
 const errorHandler = (err, request, response, next) => {
   error(err.message)
+
+  if (err.name === 'ValidationError') {
+    return response.status(400).json({ error: err.message })
+  }
+  if (err.name === 'SyntaxError') {
+    return response.status(400).json({ error: err.message })
+  }
+
   next(err)
 }
 
