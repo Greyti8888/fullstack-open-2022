@@ -39,7 +39,18 @@ blogsRouter.patch('/:id', async (req, res) => {
 })
 
 blogsRouter.delete('/:id', async (req, res) => {
-  await Blog.findByIdAndRemove(req.params.id)
+  const blogId = req.params.id
+  const decodedToken = jwt.verify(req.token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: 'token invalid' })
+  }
+  const blog = await Blog.findById(blogId)
+
+  const validUser = blog.user.toString() === decodedToken.id
+  if (!validUser) {
+    return res.status(401).json({ error: 'invalid user' })
+  }
+  await Blog.findByIdAndRemove(blogId)
   res.status(204).end()
 })
 
