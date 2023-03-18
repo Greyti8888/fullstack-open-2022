@@ -32,3 +32,14 @@ content-type: application/json
   "name": "root",
   "password": "qwerty"
 }
+
+###
+
+# Login
+POST {{url}}/api/login/ HTTP/1.1
+content-type: application/json
+
+{
+  "username": "user1",
+  "password": "qwerty"
+}
