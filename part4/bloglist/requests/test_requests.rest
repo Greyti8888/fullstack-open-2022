@@ -6,11 +6,13 @@ GET {{url}}/api/blogs HTTP/1.1
 ###
 
 # Add blog
+// Need a valid authorization token
 POST {{url}}/api/blogs/ HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIyIiwiaWQiOiI2NDE0YTliZjBmZDEwMDI4ZmIzNzdiZWQiLCJpYXQiOjE2NzkxMzU0ODl9.v1Y8amKMV6FTQrMT-AQPfBqAK4ocMDb7XfKJimEJYmM
 
 {
-  "title": "title1",
+  "title": "token1",
   "author": "a1",
   "url": "url1",
   "likes": 0

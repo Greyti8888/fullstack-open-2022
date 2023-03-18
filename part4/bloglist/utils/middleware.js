@@ -21,6 +21,13 @@ const errorHandler = (err, request, response, next) => {
   if (err.name === 'SyntaxError') {
     return response.status(400).json({ error: err.message })
   }
+  if (err.name === 'JsonWebTokenError') {
+    return response.status(401).json({ error: err.message })
+  }
+  if (err.name === 'TokenExpiredError') {
+    return response.status(401).json({ error: err.message })
+  }
+
 
   next(err)
 }
