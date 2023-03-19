@@ -1,15 +1,18 @@
-const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
+
 const Blog = require('../models/blog')
 const User = require('../models/user')
+
+const { userExtractor } = require('../utils/middleware')
 
 blogsRouter.get('/', async (req, res) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
   res.json(blogs)
 })
 
-blogsRouter.post('/', async (req, res) => {
+blogsRouter.post('/', userExtractor, async (req, res) => {
   const blog = req.body
+  const user = req.user
   if (!blog.title) {
     return res.status(400).json({ error: 'missing title' })
   }
@@ -17,12 +20,6 @@ blogsRouter.post('/', async (req, res) => {
     return res.status(400).json({ error: 'missing url' })
   }
 
-  const decodedToken = jwt.verify(req.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return res.status(401).json({ error: 'token invalid' })
-  }
-
-  const user = await User.findById(decodedToken.id)
   blog.user = user.id
 
   const newBlog = new Blog(blog)
@@ -33,20 +30,34 @@ blogsRouter.post('/', async (req, res) => {
   res.status(201).json(result)
 })
 
-blogsRouter.patch('/:id', async (req, res) => {
+blogsRouter.patch('/:id', userExtractor, async (req, res) => {
+  const blogId = req.params.id
+  const user = req.user
+
+  const blog = await Blog.findById(blogId)
+  if (!blog) {
+    res.status(404).json({ error: 'blog not found' })
+  }
+
+  const validUser = blog.user.toString() === user.id
+  if (!validUser) {
+    return res.status(401).json({ error: 'invalid user' })
+  }
+
   await Blog.findOneAndUpdate(req.params.id, req.body)
   res.status(204).end()
 })
 
-blogsRouter.delete('/:id', async (req, res) => {
+blogsRouter.delete('/:id', userExtractor, async (req, res) => {
   const blogId = req.params.id
-  const decodedToken = jwt.verify(req.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return res.status(401).json({ error: 'token invalid' })
-  }
-  const blog = await Blog.findById(blogId)
+  const user = req.user
 
-  const validUser = blog.user.toString() === decodedToken.id
+  const blog = await Blog.findById(blogId)
+  if (!blog) {
+    res.status(404).json({ error: 'blog not found' })
+  }
+
+  const validUser = blog.user.toString() === user.id
   if (!validUser) {
     return res.status(401).json({ error: 'invalid user' })
   }
