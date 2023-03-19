@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const User = require('../models/user')
@@ -21,7 +20,7 @@ beforeEach(async () => {
 
 const api = supertest(app)
 
-describe('when some blogs exist', () => {
+describe('when some users exist', () => {
   test('all users are returned', async () => {
     const response = await api.get('/api/users')
     expect(response.body).toHaveLength(initialUsers.length)
