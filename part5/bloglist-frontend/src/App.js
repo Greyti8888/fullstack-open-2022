@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
 
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
+
+const timeout = 5000
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -11,6 +14,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [newBlog, setNewBlog] = useState({})
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
@@ -34,7 +38,12 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (err) {
-      console.log(err.message)
+      console.log(err)
+      const errMsg = err.response.data.error
+      setNotification(errMsg)
+      setTimeout(() => {
+        setNotification(null)
+      }, timeout)
     }
 
   }
@@ -64,14 +73,25 @@ const App = () => {
     try {
       await blogService.create(newBlog)
       setNewBlog({})
+      setNotification('New blog added')
+      setTimeout(() => {
+        setNotification(null)
+      }, timeout)
+
     } catch (err) {
-      console.log(err.message)
+      console.log(err)
+      const errMsg = err.response.data.error
+      setNotification(errMsg)
+      setTimeout(() => {
+        setNotification(null)
+      }, timeout)
     }
   }
 
   if (user === null) {
     return (
       <div>
+        {notification && <Notification message={notification} />}
         <h2>Log in to application</h2>
         <form onSubmit={handleLogin}>
           <div>
@@ -101,6 +121,8 @@ const App = () => {
       <>
         <div>
           <h2>blogs</h2>
+          {notification && <Notification message={notification} />}
+
           <p>{user.username} logged in <button onClick={handleLogout}>logout</button></p>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
