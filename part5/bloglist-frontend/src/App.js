@@ -41,7 +41,6 @@ const App = () => {
     window.localStorage.removeItem('loggedBloglistUser')
   }
 
-
   if (user === null) {
     return (
       <div>
