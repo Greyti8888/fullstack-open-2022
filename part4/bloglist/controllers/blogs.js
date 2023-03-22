@@ -30,7 +30,7 @@ blogsRouter.post('/', userExtractor, async (req, res) => {
   res.status(201).json(result)
 })
 
-blogsRouter.patch('/:id', userExtractor, async (req, res) => {
+blogsRouter.put('/:id', userExtractor, async (req, res) => {
   const blogId = req.params.id
   const user = req.user
 

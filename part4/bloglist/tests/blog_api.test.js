@@ -227,7 +227,7 @@ describe('update of a blog', () => {
     }
 
     await api
-      .patch(`/api/blogs/${blog.id}`)
+      .put(`/api/blogs/${blog.id}`)
       .set('Authorization', `Bearer ${token}`)
       .send(update)
       .expect(204)
