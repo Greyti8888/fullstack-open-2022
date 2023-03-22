@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import NewBlogForm from './components/NewBlogForm'
+import Togglable from './components/Togglable'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -13,8 +15,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newBlog, setNewBlog] = useState({})
   const [notification, setNotification] = useState(null)
+
+  const [newBlogVisible, setNewBlogVisible] = useState(false)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
@@ -53,41 +56,6 @@ const App = () => {
     window.localStorage.removeItem('loggedBloglistUser')
   }
 
-  const handleBlogCreationChange = (target) => {
-    const name = target.name
-    const value = target.value
-
-    if (name === 'title') {
-      setNewBlog({ ...newBlog, title: value })
-    }
-    else if (name === 'author') {
-      setNewBlog({ ...newBlog, author: value })
-    }
-    else if (name === 'url') {
-      setNewBlog({ ...newBlog, url: value })
-    }
-  }
-
-  const handleBlogCreation = async (e) => {
-    e.preventDefault()
-    try {
-      await blogService.create(newBlog)
-      setNewBlog({})
-      setNotification('New blog added')
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
-
-    } catch (err) {
-      console.log(err)
-      const errMsg = err.response.data.error
-      setNotification(errMsg)
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
-    }
-  }
-
   if (user === null) {
     return (
       <div>
@@ -124,21 +92,13 @@ const App = () => {
           {notification && <Notification message={notification} />}
 
           <p>{user.username} logged in <button onClick={handleLogout}>logout</button></p>
+          <Togglable visible={newBlogVisible} setVisible={setNewBlogVisible} buttonLabel="new blog">
+            <h2>create new</h2>
+            <NewBlogForm setVisible={setNewBlogVisible} setNotification={setNotification} timeout={timeout} />
+          </Togglable>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}
-        </div>
-        <div>
-          <h2>create new</h2>
-          <form onSubmit={handleBlogCreation}>
-
-            <div>title<input type='text' name='title' onChange={({ target }) => handleBlogCreationChange(target)} /></div>
-
-            <div>author<input type='text' name='author' onChange={({ target }) => handleBlogCreationChange(target)} /></div>
-
-            <div>url<input type='text' name='url' onChange={({ target }) => handleBlogCreationChange(target)} /></div>
-            <button type="submit">create</button>
-          </form>
         </div>
       </>
 
