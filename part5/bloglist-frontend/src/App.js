@@ -77,6 +77,25 @@ const App = () => {
     }
   }
 
+  const addLike = async (blog) => {
+    try {
+      const blogCopy = { ...blog, likes: blog.likes + 1, user: blog.user.id }
+      await blogService.update(blogCopy)
+      blog.likes += 1
+      setNotification('Like added')
+      setTimeout(() => {
+        setNotification(null)
+      }, timeout)
+    } catch (err) {
+      console.log(err)
+      const errMsg = err.response.data.error
+      setNotification(errMsg)
+      setTimeout(() => {
+        setNotification(null)
+      }, timeout)
+    }
+  }
+
   if (user === null) {
     return (
       <div>
@@ -118,7 +137,7 @@ const App = () => {
             <NewBlogForm addBlog={addBlog} />
           </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} addLike={addLike} />
           )}
         </div>
       </>
