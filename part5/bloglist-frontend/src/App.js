@@ -58,7 +58,9 @@ const App = () => {
 
   const addBlog = async (blog) => {
     try {
-      await blogService.create(blog)
+      const createdBlog = await blogService.create(blog)
+      createdBlog.user = { id: createdBlog.user, username: user.username, name: user.name }
+      setBlogs([...blogs, createdBlog])
       newBlogFormRef.current.toggleVisibility()
       setNotification('New blog added')
       setTimeout(() => {
