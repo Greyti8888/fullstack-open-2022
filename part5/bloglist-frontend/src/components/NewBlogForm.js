@@ -2,37 +2,21 @@ import { useState } from 'react'
 
 import blogService from '../services/blogs';
 
-const NewBlogForm = ({ setNotification, timeout, setVisible }) => {
+const NewBlogForm = ({ addBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    try {
-      const newBlog = {
-        title,
-        author,
-        url
-      }
-      await blogService.create(newBlog)
-      setVisible(false)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-      setNotification('New blog added')
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
-
-    } catch (err) {
-      console.log(err)
-      const errMsg = err.response.data.error
-      setNotification(errMsg)
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
-    }
+    addBlog({
+      title,
+      author,
+      url
+    })
+    setTitle('')
+    setAuthor('')
+    setUrl('')
   }
 
   return (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -17,7 +17,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
 
-  const [newBlogVisible, setNewBlogVisible] = useState(false)
+  const newBlogFormRef = useRef()
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
@@ -56,6 +56,25 @@ const App = () => {
     window.localStorage.removeItem('loggedBloglistUser')
   }
 
+  const addBlog = async (blog) => {
+    try {
+      await blogService.create(blog)
+      newBlogFormRef.current.toggleVisibility()
+      setNotification('New blog added')
+      setTimeout(() => {
+        setNotification(null)
+      }, timeout)
+
+    } catch (err) {
+      console.log(err)
+      const errMsg = err.response.data.error
+      setNotification(errMsg)
+      setTimeout(() => {
+        setNotification(null)
+      }, timeout)
+    }
+  }
+
   if (user === null) {
     return (
       <div>
@@ -92,9 +111,9 @@ const App = () => {
           {notification && <Notification message={notification} />}
 
           <p>{user.username} logged in <button onClick={handleLogout}>logout</button></p>
-          <Togglable visible={newBlogVisible} setVisible={setNewBlogVisible} buttonLabel="new blog">
+          <Togglable ref={newBlogFormRef} buttonLabel="new blog">
             <h2>create new</h2>
-            <NewBlogForm setVisible={setNewBlogVisible} setNotification={setNotification} timeout={timeout} />
+            <NewBlogForm addBlog={addBlog} />
           </Togglable>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
