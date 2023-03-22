@@ -44,7 +44,7 @@ blogsRouter.put('/:id', userExtractor, async (req, res) => {
     return res.status(401).json({ error: 'invalid user' })
   }
 
-  await Blog.findOneAndUpdate(req.params.id, req.body)
+  await Blog.findByIdAndUpdate(req.params.id, req.body)
   res.status(204).end()
 })
 
