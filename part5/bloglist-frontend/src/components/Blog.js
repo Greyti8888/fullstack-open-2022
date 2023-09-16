@@ -23,7 +23,7 @@ const Blog = ({ blog, addLike, deleteBlog, username }) => {
   if (showDetails) {
     return (
       <div style={blogStyle}>
-        <div>{blog.title} <button onClick={() => setShowDetails(false)}>hide</button></div>
+        <div>{blog.title} - {blog.author} <button onClick={() => setShowDetails(false)}>hide</button></div>
         <div>{blog.url}</div>
         <div>{blog.likes} <button onClick={() => addLike(blog)}>like</button></div>
         <div>{blog.user.username}</div>
@@ -34,7 +34,7 @@ const Blog = ({ blog, addLike, deleteBlog, username }) => {
   } else {
     return (
       <div style={blogStyle}>
-        <div>{blog.title} <button onClick={() => setShowDetails(true)}>view</button></div>
+        <div>{blog.title} - {blog.author} <button onClick={() => setShowDetails(true)}>view</button></div>
       </div >
     )
   }
