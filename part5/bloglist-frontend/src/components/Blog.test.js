@@ -3,6 +3,7 @@ import '@testing-library/jest-dom/extend-expect'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import NewBlogForm from './NewBlogForm'
 
 const blog = {
   title: 'blogTitle',
@@ -15,14 +16,15 @@ const blog = {
 }
 
 describe('blog tests', () => {
-  test('renders blog', () => {
-    const mockHandler = jest.fn()
-    render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
-
-    const element = screen.getByRole('listitem')
-    expect(element).toBeDefined()
-  })
   describe('default blog view', () => {
+    test('renders blog', () => {
+      const mockHandler = jest.fn()
+      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
+
+      const element = screen.getByRole('listitem')
+      expect(element).toBeDefined()
+    })
+
     test('show blog title', () => {
       const mockHandler = jest.fn()
       render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
@@ -89,6 +91,31 @@ describe('blog tests', () => {
       await user.click(likeButton)
       await user.click(likeButton)
       expect(mockHandler.mock.calls).toHaveLength(2)
+    })
+  })
+  describe('new blog form', () => {
+    test('call event handler with correct details', async () => {
+      const mockAddBlog = jest.fn()
+      render(<NewBlogForm addBlog={mockAddBlog} />)
+      const user = userEvent.setup()
+
+      const title = screen.getByRole('textbox', { name: 'title' })
+      const author = screen.getByRole('textbox', { name: 'author' })
+      const url = screen.getByRole('textbox', { name: 'url' })
+
+
+      await user.type(title, blog.title)
+      await user.type(author, blog.author)
+      await user.type(url, blog.url)
+
+      const submitButton = screen.getByRole('button', { name: /create/i })
+      await user.click(submitButton)
+
+      expect(mockAddBlog.mock.calls[0][0]).toEqual({
+        title: blog.title,
+        author: blog.author,
+        url: blog.url
+      })
     })
   })
 })
