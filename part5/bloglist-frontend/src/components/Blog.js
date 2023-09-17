@@ -22,20 +22,19 @@ const Blog = ({ blog, addLike, deleteBlog, username }) => {
 
   if (showDetails) {
     return (
-      <div style={blogStyle}>
-        <div>{blog.title} - {blog.author} <button onClick={() => setShowDetails(false)}>hide</button></div>
+      <li style={blogStyle}>
+        <div className='test'>{blog.title} - {blog.author} <button onClick={() => setShowDetails(false)}>hide</button></div>
         <div>{blog.url}</div>
         <div>{blog.likes} <button onClick={() => addLike(blog)}>like</button></div>
         <div>{blog.user.username}</div>
         <button style={deleteButtonStyle} onClick={handleDelete}>delete</button>
-
-      </div>
+      </li>
     )
   } else {
     return (
-      <div style={blogStyle}>
-        <div>{blog.title} - {blog.author} <button onClick={() => setShowDetails(true)}>view</button></div>
-      </div >
+      <li style={blogStyle}>
+        <div className='test1'>{blog.title} - {blog.author} <button onClick={() => setShowDetails(true)}>view</button></div>
+      </li>
     )
   }
 }
