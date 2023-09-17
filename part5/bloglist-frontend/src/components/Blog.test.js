@@ -77,5 +77,18 @@ describe('blog tests', () => {
       await user.click(button)
       expect(element).toHaveTextContent(blog.likes)
     })
+
+    test('when like button clicked 2 times, event handler is called 2 times', async () => {
+      const mockHandler = jest.fn()
+      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
+      const user = userEvent.setup()
+
+      const viewButton = screen.getByRole('button', { name: /view/i })
+      await user.click(viewButton)
+      const likeButton = screen.getByRole('button', { name: /like/i })
+      await user.click(likeButton)
+      await user.click(likeButton)
+      expect(mockHandler.mock.calls).toHaveLength(2)
+    })
   })
 })
