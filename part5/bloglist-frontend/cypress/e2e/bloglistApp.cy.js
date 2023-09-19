@@ -4,6 +4,7 @@ describe('Blog app', function () {
     username: 'user1',
     password: 'qwerty'
   }
+
   beforeEach(function () {
     cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
     cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user)
@@ -42,13 +43,7 @@ describe('Blog app', function () {
     }
 
     beforeEach(function () {
-      cy.request('POST', `${Cypress.env('BACKEND')}/login`, {
-        username: user.username,
-        password: user.password
-      }).then(res => {
-        localStorage.setItem('loggedBloglistUser', JSON.stringify(res.body))
-        cy.visit('')
-      })
+      cy.login(user)
     })
 
     it('A blog can be created', function () {
@@ -94,6 +89,23 @@ describe('Blog app', function () {
         cy.contains('delete').click()
         cy.contains(`${blog.title} - ${blog.author}`).should('not.exist')
         cy.contains('Blog deleted')
+      })
+
+      it('Only creator of blog can see delete button', function () {
+        cy.contains('view').click()
+        cy.contains('delete').should('be.visible')
+
+        const user2 = {
+          name: 'First2 Last2',
+          username: 'user2',
+          password: 'qwerty'
+        }
+        cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user2)
+        cy.login(user2)
+        cy.visit('')
+
+        cy.contains('view').click()
+        cy.contains('delete').should('not.be.visible')
       })
     })
   })
