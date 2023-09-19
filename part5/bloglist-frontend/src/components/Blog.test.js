@@ -17,52 +17,50 @@ const blog = {
 
 describe('blog tests', () => {
   describe('default blog view', () => {
-    test('renders blog', () => {
-      const mockHandler = jest.fn()
-      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
+    let mockHandler
 
+    beforeEach(() => {
+      mockHandler = jest.fn()
+      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
+    })
+
+    test('renders blog', () => {
       const element = screen.getByRole('listitem')
       expect(element).toBeDefined()
     })
 
     test('show blog title', () => {
-      const mockHandler = jest.fn()
-      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
-
       const element = screen.getByRole('listitem')
       expect(element).toHaveTextContent(blog.title)
     })
 
     test('show blog author', () => {
-      const mockHandler = jest.fn()
-      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
-
       const element = screen.getByRole('listitem')
       expect(element).toHaveTextContent(blog.author)
     })
 
     test('does not show blog url', () => {
-      const mockHandler = jest.fn()
-      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
-
       const element = screen.getByRole('listitem')
       expect(element).not.toHaveTextContent(blog.url)
     })
 
     test('does not show number of likes', () => {
-      const mockHandler = jest.fn()
-      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
-
       const element = screen.getByRole('listitem')
       expect(element).not.toHaveTextContent(blog.likes)
     })
   })
-  describe('detailed view', () => {
-    test('show blog url', async () => {
-      const mockHandler = jest.fn()
-      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
-      const user = userEvent.setup()
 
+  describe('detailed view', () => {
+    let mockHandler
+    let user
+
+    beforeEach(() => {
+      mockHandler = jest.fn()
+      user = userEvent.setup()
+      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
+    })
+
+    test('show blog url', async () => {
       const element = screen.getByRole('listitem')
       const button = screen.getByRole('button', { name: /view/i })
       await user.click(button)
@@ -70,10 +68,6 @@ describe('blog tests', () => {
     })
 
     test('show number of likes', async () => {
-      const mockHandler = jest.fn()
-      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
-      const user = userEvent.setup()
-
       const element = screen.getByRole('listitem')
       const button = screen.getByRole('button', { name: /view/i })
       await user.click(button)
@@ -81,10 +75,6 @@ describe('blog tests', () => {
     })
 
     test('when like button clicked 2 times, event handler is called 2 times', async () => {
-      const mockHandler = jest.fn()
-      render(<Blog blog={blog} addLike={mockHandler} deleteBlog={mockHandler} username={blog.user.username} />)
-      const user = userEvent.setup()
-
       const viewButton = screen.getByRole('button', { name: /view/i })
       await user.click(viewButton)
       const likeButton = screen.getByRole('button', { name: /like/i })
@@ -93,6 +83,7 @@ describe('blog tests', () => {
       expect(mockHandler.mock.calls).toHaveLength(2)
     })
   })
+
   describe('new blog form', () => {
     test('call event handler with correct details', async () => {
       const mockAddBlog = jest.fn()
