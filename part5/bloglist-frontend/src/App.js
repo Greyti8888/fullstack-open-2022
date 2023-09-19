@@ -122,8 +122,9 @@ const App = () => {
         <h2>Log in to application</h2>
         <form onSubmit={handleLogin}>
           <div>
-            username
+            <label htmlFor="Username">username </label>
             <input
+              id='username'
               type="text"
               value={username}
               name="Username"
@@ -131,8 +132,9 @@ const App = () => {
             />
           </div>
           <div>
-            password
+            <label htmlFor="Password">password </label>
             <input
+              id='password'
               type="password"
               value={password}
               name="Password"
