@@ -36,10 +36,10 @@ describe('Blog app', function () {
 
   describe('When logged in', function () {
     const blog = {
-      title: 'someTitle',
+      title: 'Zero likes',
       author: 'someAuthor',
       url: 'someUrl',
-      likes: 789
+      likes: 0
     }
 
     beforeEach(function () {
@@ -47,7 +47,7 @@ describe('Blog app', function () {
     })
 
     it('A blog can be created', function () {
-      cy.contains('new blog').click()
+      cy.get('button').contains('new blog').click()
       cy.get('input[name="title"]').type(blog.title)
       cy.get('input[name="author"]').type(blog.author)
       cy.get('input[name="url"]').type(blog.url)
@@ -59,41 +59,27 @@ describe('Blog app', function () {
 
     describe('When blog exist', function () {
       beforeEach(function () {
-        cy.request({
-          url: `${Cypress.env('BACKEND')}/blogs`,
-          method: 'POST',
-          body: {
-            title: blog.title,
-            author: blog.author,
-            url: blog.url,
-            likes: blog.likes
-          },
-          headers: {
-            'Authorization': `Bearer ${JSON.parse(localStorage.getItem('loggedBloglistUser')).token}`
-          }
-        }).then(() => {
-          cy.visit('')
-        })
+        cy.createBlog(blog)
       })
 
       it('Can be liked', function () {
-        cy.contains('view').click()
-        cy.contains('like').click()
+        cy.get('button').contains('view').click()
+        cy.get('button').contains('like').click()
           .parent()
           .contains(blog.likes + 1)
         cy.contains('Like added')
       })
 
       it('Can be deleted', function () {
-        cy.contains('view').click()
-        cy.contains('delete').click()
+        cy.get('button').contains('view').click()
+        cy.get('button').contains('delete').click()
         cy.contains(`${blog.title} - ${blog.author}`).should('not.exist')
         cy.contains('Blog deleted')
       })
 
       it('Only creator of blog can see delete button', function () {
-        cy.contains('view').click()
-        cy.contains('delete').should('be.visible')
+        cy.get('button').contains('view').click()
+        cy.get('button').contains('delete').should('be.visible')
 
         const user2 = {
           name: 'First2 Last2',
@@ -104,8 +90,42 @@ describe('Blog app', function () {
         cy.login(user2)
         cy.visit('')
 
-        cy.contains('view').click()
-        cy.contains('delete').should('not.be.visible')
+        cy.get('button').contains('view').click()
+        cy.get('button').contains('delete').should('not.be.visible')
+      })
+
+      it('Blogs are orders according to amount of likes', function () {
+        const blog2 = {
+          title: 'One like',
+          author: 'someAuthor',
+          url: 'someUrl',
+          likes: 1
+        }
+        const blog3 = {
+          title: 'Two likes',
+          author: 'someAuthor',
+          url: 'someUrl',
+          likes: 2
+        }
+
+        cy.createBlog(blog3)
+        cy.createBlog(blog2)
+
+        cy.get('.blog').eq(0).should('contain', blog3.title)
+        cy.get('.blog').eq(1).should('contain', blog2.title)
+        cy.get('.blog').eq(2).should('contain', blog.title)
+
+        cy.contains(blog.title).parent().find('button').click()
+        cy.get('button').contains('like')
+          .click()
+          .click()
+          .click()
+          .wait(2000)
+          .parent().contains(blog.likes + 3)
+
+        cy.get('.blog').eq(0).should('contain', blog.title)
+        cy.get('.blog').eq(1).should('contain', blog3.title)
+        cy.get('.blog').eq(2).should('contain', blog2.title)
       })
     })
   })
