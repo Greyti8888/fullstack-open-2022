@@ -88,6 +88,13 @@ describe('Blog app', function () {
           .contains(blog.likes + 1)
         cy.contains('Like added')
       })
+
+      it('Can be deleted', function () {
+        cy.contains('view').click()
+        cy.contains('delete').click()
+        cy.contains(`${blog.title} - ${blog.author}`).should('not.exist')
+        cy.contains('Blog deleted')
+      })
     })
   })
 })
