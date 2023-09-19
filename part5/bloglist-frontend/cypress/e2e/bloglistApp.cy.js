@@ -1,12 +1,11 @@
 describe('Blog app', function () {
-  let user
+  const user = {
+    name: 'First Last',
+    username: 'user1',
+    password: 'qwerty'
+  }
   beforeEach(function () {
     cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
-    user = {
-      name: 'First Last',
-      username: 'user1',
-      password: 'qwerty'
-    }
     cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user)
     cy.visit('')
   })
@@ -35,6 +34,13 @@ describe('Blog app', function () {
   })
 
   describe('When logged in', function () {
+    const blog = {
+      title: 'someTitle',
+      author: 'someAuthor',
+      url: 'someUrl',
+      likes: 789
+    }
+
     beforeEach(function () {
       cy.request('POST', `${Cypress.env('BACKEND')}/login`, {
         username: user.username,
@@ -45,13 +51,7 @@ describe('Blog app', function () {
       })
     })
 
-    it.only('A blog can be created', function () {
-      const blog = {
-        title: 'someTitle',
-        author: 'someAuthor',
-        url: 'someUrl'
-      }
-
+    it('A blog can be created', function () {
       cy.contains('new blog').click()
       cy.get('input[name="title"]').type(blog.title)
       cy.get('input[name="author"]').type(blog.author)
@@ -60,6 +60,34 @@ describe('Blog app', function () {
 
       cy.contains('New blog added')
       cy.contains(`${blog.title} - ${blog.author}`)
+    })
+
+    describe('When blog exist', function () {
+      beforeEach(function () {
+        cy.request({
+          url: `${Cypress.env('BACKEND')}/blogs`,
+          method: 'POST',
+          body: {
+            title: blog.title,
+            author: blog.author,
+            url: blog.url,
+            likes: blog.likes
+          },
+          headers: {
+            'Authorization': `Bearer ${JSON.parse(localStorage.getItem('loggedBloglistUser')).token}`
+          }
+        }).then(() => {
+          cy.visit('')
+        })
+      })
+
+      it('Can be liked', function () {
+        cy.contains('view').click()
+        cy.contains('like').click()
+          .parent()
+          .contains(blog.likes + 1)
+        cy.contains('Like added')
+      })
     })
   })
 })
