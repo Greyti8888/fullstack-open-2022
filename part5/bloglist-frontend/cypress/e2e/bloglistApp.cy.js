@@ -33,4 +33,33 @@ describe('Blog app', function () {
       cy.contains('invalid username or password')
     })
   })
+
+  describe('When logged in', function () {
+    beforeEach(function () {
+      cy.request('POST', `${Cypress.env('BACKEND')}/login`, {
+        username: user.username,
+        password: user.password
+      }).then(res => {
+        localStorage.setItem('loggedBloglistUser', JSON.stringify(res.body))
+        cy.visit('')
+      })
+    })
+
+    it.only('A blog can be created', function () {
+      const blog = {
+        title: 'someTitle',
+        author: 'someAuthor',
+        url: 'someUrl'
+      }
+
+      cy.contains('new blog').click()
+      cy.get('input[name="title"]').type(blog.title)
+      cy.get('input[name="author"]').type(blog.author)
+      cy.get('input[name="url"]').type(blog.url)
+      cy.get('button[type=submit]').click()
+
+      cy.contains('New blog added')
+      cy.contains(`${blog.title} - ${blog.author}`)
+    })
+  })
 })
