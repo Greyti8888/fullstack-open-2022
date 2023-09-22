@@ -19,8 +19,9 @@ const AnecdoteList = () => {
   const anecdotes = useSelector(state => {
     if (state.filter) {
       return state.anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(state.filter))
-    } else return state.anecdotes
+    } else return [...state.anecdotes]
   })
+
 
   const dispatch = useDispatch()
 
