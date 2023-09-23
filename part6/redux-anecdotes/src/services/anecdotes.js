@@ -17,9 +17,9 @@ const asObject = (anecdote) => {
   }
 }
 
-const add = async (anecdote) => {
-  const anecdoteObj = asObject(anecdote)
-  const response = await axios.post(baseUrl, anecdoteObj)
+const add = async (content) => {
+  const anecdote = asObject(content)
+  const response = await axios.post(baseUrl, anecdote)
   return response.data
 }
 

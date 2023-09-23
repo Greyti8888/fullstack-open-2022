@@ -25,7 +25,6 @@ const AnecdoteList = () => {
       return state.anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(state.filter))
     } else return [...state.anecdotes]
   })
-
   const dispatch = useDispatch()
 
   useEffect(() => {
