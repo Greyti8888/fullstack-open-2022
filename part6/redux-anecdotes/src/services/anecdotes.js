@@ -4,7 +4,6 @@ const baseUrl = 'http://localhost:3001/anecdotes'
 
 const getAll = async () => {
   const response = await axios.get(baseUrl)
-  console.log(response)
   return response.data
 }
 
@@ -21,8 +20,8 @@ const asObject = (anecdote) => {
 const add = async (anecdote) => {
   const anecdoteObj = asObject(anecdote)
   const response = await axios.post(baseUrl, anecdoteObj)
-  console.log(response)
   return response.data
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default { getAll, add }

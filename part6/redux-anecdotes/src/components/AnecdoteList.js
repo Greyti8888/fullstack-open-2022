@@ -1,8 +1,8 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { useEffect } from 'react'
-import { vote, setAnecdotes } from '../reducers/anecdoteReducer'
+import { vote } from '../reducers/anecdoteReducer'
 import { setNotification } from '../reducers/notificationReducer'
-import anecdotesService from '../services/anecdotes'
+import { initializeAnecdotes } from '../reducers/anecdoteReducer'
 
 
 const Anecdote = (anecdote, handleVote) => {
@@ -29,7 +29,7 @@ const AnecdoteList = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    anecdotesService.getAll().then(anecdotes => dispatch(setAnecdotes(anecdotes)))
+    dispatch(initializeAnecdotes())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
