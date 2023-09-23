@@ -8,8 +8,9 @@ const AnecdoteForm = () => {
 
   const handleCreate = async (e) => {
     e.preventDefault()
-    dispatch(create(e.target.anecdote.value))
-    dispatch(setNotification('new anecdote added'))
+    const anecdoteContent = e.target.anecdote.value
+    dispatch(create(anecdoteContent))
+    dispatch(setNotification(`new anecdote '${anecdoteContent}'`, 5))
   }
 
   return (
