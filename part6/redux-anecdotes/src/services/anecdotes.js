@@ -23,5 +23,11 @@ const add = async (content) => {
   return response.data
 }
 
+const vote = async (id) => {
+  const { data: anecdote } = await axios.get(`${baseUrl}/${id}`)
+  const response = await axios.patch(`${baseUrl}/${id}`, { votes: anecdote.votes + 1 })
+  return response.data
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, add }
+export default { getAll, add, vote }
