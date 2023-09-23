@@ -30,6 +30,7 @@ const AnecdoteList = () => {
 
   useEffect(() => {
     anecdotesService.getAll().then(anecdotes => dispatch(setAnecdotes(anecdotes)))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
 
