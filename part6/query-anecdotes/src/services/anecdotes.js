@@ -23,4 +23,10 @@ const add = async (content) => {
   return response.data
 }
 
-export default { getAll, add }
+const vote = async (id) => {
+  const { data: anecdote } = await axios.get(`${baseUrl}/${id}`)
+  const response = await axios.patch(`${baseUrl}/${id}`, { votes: anecdote.votes + 1 })
+  return response.data
+}
+
+export default { getAll, add, vote }
