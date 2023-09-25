@@ -2,6 +2,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 import anecdotesService from './services/anecdotes'
+import { useNotificationDispatch } from './NotificationContext'
 
 const App = () => {
   const { isLoading, isError, error, data: anecdotes, } = useQuery({
@@ -9,7 +10,9 @@ const App = () => {
     queryFn: anecdotesService.getAll,
     retry: false,
   })
+
   const quaryClient = useQueryClient()
+
   const voteAnecdoteMutation = useMutation({
     mutationFn: anecdotesService.vote,
     onSuccess: () => {
@@ -17,8 +20,11 @@ const App = () => {
     }
   })
 
+  const notificationDispatch = useNotificationDispatch()
+
   const handleVote = (anecdote) => {
     voteAnecdoteMutation.mutate(anecdote.id)
+    notificationDispatch({ type: 'VOTE', payload: anecdote.content })
   }
 
   if (isLoading) {
