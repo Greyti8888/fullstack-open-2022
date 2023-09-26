@@ -18,6 +18,9 @@ const asObject = (anecdote) => {
 }
 
 const add = async (content) => {
+  if (content.length < 5) {
+    throw new Error('anecdote too short, must have length 5 or more')
+  }
   const anecdote = asObject(content)
   const response = await axios.post(baseUrl, anecdote)
   return response.data

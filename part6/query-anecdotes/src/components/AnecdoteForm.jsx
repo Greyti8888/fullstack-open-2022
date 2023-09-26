@@ -8,6 +8,9 @@ const AnecdoteForm = () => {
     mutationFn: anecdotesService.add,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
+    },
+    onError: (err) => {
+      notificationDispatch({ type: 'ERROR', payload: err.message })
     }
   })
 
