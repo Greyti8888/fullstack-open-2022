@@ -10,11 +10,12 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 import { setNotification } from './reducers/notificationReducer'
+import { create, initializeBlogs } from './reducers/blogsReducer'
 
 const timeout = 5
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const blogs = useSelector(state => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -24,14 +25,16 @@ const App = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    console.log('useEffect')
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
     }
-    blogService.getAll().then(blogs => setBlogs(blogs))
+  }, [])
+
+  useEffect(() => {
+    dispatch(initializeBlogs())
   }, [])
 
   const handleLogin = async e => {
@@ -60,13 +63,7 @@ const App = () => {
 
   const addBlog = async blog => {
     try {
-      const createdBlog = await blogService.create(blog)
-      createdBlog.user = {
-        id: createdBlog.user,
-        username: user.username,
-        name: user.name
-      }
-      setBlogs([...blogs, createdBlog])
+      dispatch(create(blog, user))
       newBlogFormRef.current.toggleVisibility()
       dispatch(setNotification('New blog added', timeout))
     } catch (err) {
@@ -78,16 +75,16 @@ const App = () => {
 
   const addLike = async blog => {
     try {
-      const blogCopy = {
-        ...blog,
-        likes: blog.likes + 1,
-        user: blog.user.id
-      }
-      await blogService.update(blogCopy)
-      const newBlogs = blogs.map(bl =>
-        bl.id === blog.id ? { ...blog, likes: blog.likes + 1 } : bl
-      )
-      setBlogs(newBlogs)
+      // const blogCopy = {
+      //   ...blog,
+      //   likes: blog.likes + 1,
+      //   user: blog.user.id
+      // }
+      // await blogService.update(blogCopy)
+      // const newBlogs = blogs.map(bl =>
+      //   bl.id === blog.id ? { ...blog, likes: blog.likes + 1 } : bl
+      // )
+      // setBlogs(newBlogs)
       dispatch(setNotification(`Liked ${blog.title}`, timeout))
     } catch (err) {
       console.log(err)
@@ -99,8 +96,8 @@ const App = () => {
   const deleteBlog = async id => {
     try {
       await blogService.deleteBlog(id)
-      const blogsCopy = blogs.filter(blog => blog.id !== id)
-      setBlogs(blogsCopy)
+      // const blogsCopy = blogs.filter(blog => blog.id !== id)
+      // setBlogs(blogsCopy)
       dispatch(setNotification('Blog deleted', timeout))
     } catch (err) {
       console.log(err)
@@ -157,7 +154,7 @@ const App = () => {
             <NewBlogForm addBlog={addBlog} />
           </Togglable>
           <ul>
-            {blogs
+            {[...blogs]
               .sort((a, b) => b.likes - a.likes)
               .map(blog => (
                 <Blog
