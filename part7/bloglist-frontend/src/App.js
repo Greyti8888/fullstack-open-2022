@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -8,33 +9,37 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-const timeout = 5000
+import { setNotification } from './reducers/notificationReducer'
+
+const timeout = 5
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState(null)
+  const notification = useSelector(state => state.notification.message)
 
   const newBlogFormRef = useRef()
+  const dispatch = useDispatch()
 
   useEffect(() => {
+    console.log('useEffect')
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
     }
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    blogService.getAll().then(blogs => setBlogs(blogs))
   }, [])
 
-  const handleLogin = async (e) => {
+  const handleLogin = async e => {
     e.preventDefault()
     try {
       const user = await loginService.login({
         username,
-        password,
+        password
       })
       window.localStorage.setItem('loggedBloglistUser', JSON.stringify(user))
       setUser(user)
@@ -44,10 +49,7 @@ const App = () => {
     } catch (err) {
       console.log(err)
       const errMsg = err.response.data.error
-      setNotification(errMsg)
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
+      dispatch(setNotification(errMsg, timeout))
     }
   }
 
@@ -56,69 +58,54 @@ const App = () => {
     window.localStorage.removeItem('loggedBloglistUser')
   }
 
-  const addBlog = async (blog) => {
+  const addBlog = async blog => {
     try {
       const createdBlog = await blogService.create(blog)
       createdBlog.user = {
         id: createdBlog.user,
         username: user.username,
-        name: user.name,
+        name: user.name
       }
       setBlogs([...blogs, createdBlog])
       newBlogFormRef.current.toggleVisibility()
-      setNotification('New blog added')
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
+      dispatch(setNotification('New blog added', timeout))
     } catch (err) {
       console.log(err)
       const errMsg = err.response.data.error
-      setNotification(errMsg)
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
+      dispatch(setNotification(errMsg, timeout))
     }
   }
 
-  const addLike = async (blog) => {
+  const addLike = async blog => {
     try {
       const blogCopy = {
         ...blog,
         likes: blog.likes + 1,
-        user: blog.user.id,
+        user: blog.user.id
       }
       await blogService.update(blogCopy)
-      blog.likes += 1
-      setNotification('Like added')
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
+      const newBlogs = blogs.map(bl =>
+        bl.id === blog.id ? { ...blog, likes: blog.likes + 1 } : bl
+      )
+      setBlogs(newBlogs)
+      dispatch(setNotification(`Liked ${blog.title}`, timeout))
     } catch (err) {
       console.log(err)
       const errMsg = err.response.data.error
-      setNotification(errMsg)
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
+      dispatch(setNotification(errMsg, timeout))
     }
   }
 
-  const deleteBlog = async (id) => {
+  const deleteBlog = async id => {
     try {
       await blogService.deleteBlog(id)
-      const blogsCopy = blogs.filter((blog) => blog.id !== id)
+      const blogsCopy = blogs.filter(blog => blog.id !== id)
       setBlogs(blogsCopy)
-      setNotification('Blog deleted')
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
+      dispatch(setNotification('Blog deleted', timeout))
     } catch (err) {
       console.log(err)
       const errMsg = err.response.data.error
-      setNotification(errMsg)
-      setTimeout(() => {
-        setNotification(null)
-      }, timeout)
+      dispatch(setNotification(errMsg, timeout))
     }
   }
 
@@ -172,7 +159,7 @@ const App = () => {
           <ul>
             {blogs
               .sort((a, b) => b.likes - a.likes)
-              .map((blog) => (
+              .map(blog => (
                 <Blog
                   key={blog.id}
                   blog={blog}

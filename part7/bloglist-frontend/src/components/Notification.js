@@ -5,7 +5,7 @@ const Notification = ({ message }) => (
     style={{
       border: 'solid black',
       padding: '5px',
-      backgroundColor: 'lightgrey',
+      backgroundColor: 'lightgrey'
     }}
   >
     <h3>{message}</h3>
@@ -13,7 +13,7 @@ const Notification = ({ message }) => (
 )
 
 Notification.propTypes = {
-  message: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired
 }
 
 export default Notification

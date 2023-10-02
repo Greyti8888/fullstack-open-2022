@@ -6,12 +6,12 @@ const NewBlogForm = ({ addBlog }) => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault()
     addBlog({
       title,
       author,
-      url,
+      url
     })
     setTitle('')
     setAuthor('')
@@ -58,7 +58,7 @@ const NewBlogForm = ({ addBlog }) => {
 }
 
 NewBlogForm.propTypes = {
-  addBlog: PropTypes.func.isRequired,
+  addBlog: PropTypes.func.isRequired
 }
 
 export default NewBlogForm

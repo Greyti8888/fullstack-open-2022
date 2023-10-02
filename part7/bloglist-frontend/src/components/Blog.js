@@ -7,11 +7,11 @@ const Blog = ({ blog, addLike, deleteBlog, username }) => {
   const blogStyle = {
     padding: 10,
     border: 'solid',
-    margin: '5px 0px',
+    margin: '5px 0px'
   }
 
   const deleteButtonStyle = {
-    display: blog.user.username === username ? '' : 'none',
+    display: blog.user.username === username ? '' : 'none'
   }
 
   const handleDelete = () => {
@@ -53,7 +53,7 @@ Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   addLike: PropTypes.func.isRequired,
   deleteBlog: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired
 }
 
 export default Blog

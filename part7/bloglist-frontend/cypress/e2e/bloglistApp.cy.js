@@ -2,7 +2,7 @@ describe('Blog app', function () {
   const user = {
     name: 'First Last',
     username: 'user1',
-    password: 'qwerty',
+    password: 'qwerty'
   }
 
   beforeEach(function () {
@@ -39,7 +39,7 @@ describe('Blog app', function () {
       title: 'Zero likes',
       author: 'someAuthor',
       url: 'someUrl',
-      likes: 0,
+      likes: 0
     }
 
     beforeEach(function () {
@@ -86,7 +86,7 @@ describe('Blog app', function () {
         const user2 = {
           name: 'First2 Last2',
           username: 'user2',
-          password: 'qwerty',
+          password: 'qwerty'
         }
         cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user2)
         cy.login(user2)
@@ -101,13 +101,13 @@ describe('Blog app', function () {
           title: 'One like',
           author: 'someAuthor',
           url: 'someUrl',
-          likes: 1,
+          likes: 1
         }
         const blog3 = {
           title: 'Two likes',
           author: 'someAuthor',
           url: 'someUrl',
-          likes: 2,
+          likes: 2
         }
 
         cy.createBlog(blog3)

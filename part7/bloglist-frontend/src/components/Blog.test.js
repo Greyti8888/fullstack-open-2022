@@ -11,8 +11,8 @@ const blog = {
   url: 'blogLink',
   likes: 789,
   user: {
-    username: 'user1',
-  },
+    username: 'user1'
+  }
 }
 
 describe('blog tests', () => {
@@ -27,7 +27,7 @@ describe('blog tests', () => {
           addLike={mockHandler}
           deleteBlog={mockHandler}
           username={blog.user.username}
-        />,
+        />
       )
     })
 
@@ -70,7 +70,7 @@ describe('blog tests', () => {
           addLike={mockHandler}
           deleteBlog={mockHandler}
           username={blog.user.username}
-        />,
+        />
       )
     })
 
@@ -118,7 +118,7 @@ describe('blog tests', () => {
       expect(mockAddBlog.mock.calls[0][0]).toEqual({
         title: blog.title,
         author: blog.author,
-        url: blog.url,
+        url: blog.url
       })
     })
   })
