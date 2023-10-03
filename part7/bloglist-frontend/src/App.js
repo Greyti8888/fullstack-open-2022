@@ -6,9 +6,6 @@ import Notification from './components/Notification'
 import NewBlogForm from './components/NewBlogForm'
 import Togglable from './components/Togglable'
 
-import blogService from './services/blogs'
-import loginService from './services/login'
-
 import { setNotification } from './reducers/notificationReducer'
 import {
   createBlog,
@@ -16,6 +13,7 @@ import {
   increaseLikes,
   removeBlog
 } from './reducers/blogsReducer'
+import { userLogin, logout, setInintialUser } from './reducers/userReducer'
 
 const timeout = 5
 
@@ -23,35 +21,24 @@ const App = () => {
   const blogs = useSelector(state => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const user = useSelector(state => state.user)
   const notification = useSelector(state => state.notification.message)
 
   const newBlogFormRef = useRef()
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
+    dispatch(setInintialUser())
   }, [])
 
   useEffect(() => {
-    dispatch(initializeBlogs())
-  }, [])
+    dispatch(initializeBlogs(user))
+  }, [user])
 
   const handleLogin = async e => {
     e.preventDefault()
     try {
-      const user = await loginService.login({
-        username,
-        password
-      })
-      window.localStorage.setItem('loggedBloglistUser', JSON.stringify(user))
-      setUser(user)
-      blogService.setToken(user.token)
+      dispatch(userLogin({ username, password }))
       setUsername('')
       setPassword('')
     } catch (err) {
@@ -62,8 +49,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    setUser(null)
-    window.localStorage.removeItem('loggedBloglistUser')
+    dispatch(logout())
   }
 
   const addBlog = async blog => {

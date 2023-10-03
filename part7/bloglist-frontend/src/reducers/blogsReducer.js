@@ -28,10 +28,12 @@ const blogsSlice = createSlice({
 
 const { add, setBlogs, likes, remove } = blogsSlice.actions
 
-export const initializeBlogs = () => {
+export const initializeBlogs = user => {
   return async dispatch => {
-    const blogs = await blogsService.getAll()
-    dispatch(setBlogs(blogs))
+    if (user) {
+      const blogs = await blogsService.getAll()
+      dispatch(setBlogs(blogs))
+    }
   }
 }
 
