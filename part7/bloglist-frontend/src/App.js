@@ -10,7 +10,12 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 
 import { setNotification } from './reducers/notificationReducer'
-import { create, initializeBlogs } from './reducers/blogsReducer'
+import {
+  createBlog,
+  initializeBlogs,
+  increaseLikes,
+  removeBlog
+} from './reducers/blogsReducer'
 
 const timeout = 5
 
@@ -63,7 +68,7 @@ const App = () => {
 
   const addBlog = async blog => {
     try {
-      dispatch(create(blog, user))
+      dispatch(createBlog(blog, user))
       newBlogFormRef.current.toggleVisibility()
       dispatch(setNotification('New blog added', timeout))
     } catch (err) {
@@ -75,16 +80,7 @@ const App = () => {
 
   const addLike = async blog => {
     try {
-      // const blogCopy = {
-      //   ...blog,
-      //   likes: blog.likes + 1,
-      //   user: blog.user.id
-      // }
-      // await blogService.update(blogCopy)
-      // const newBlogs = blogs.map(bl =>
-      //   bl.id === blog.id ? { ...blog, likes: blog.likes + 1 } : bl
-      // )
-      // setBlogs(newBlogs)
+      dispatch(increaseLikes(blog))
       dispatch(setNotification(`Liked ${blog.title}`, timeout))
     } catch (err) {
       console.log(err)
@@ -95,9 +91,7 @@ const App = () => {
 
   const deleteBlog = async id => {
     try {
-      await blogService.deleteBlog(id)
-      // const blogsCopy = blogs.filter(blog => blog.id !== id)
-      // setBlogs(blogsCopy)
+      dispatch(removeBlog(id))
       dispatch(setNotification('Blog deleted', timeout))
     } catch (err) {
       console.log(err)
