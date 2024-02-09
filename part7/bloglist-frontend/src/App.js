@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { Routes, Route, Link } from 'react-router-dom'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import NewBlogForm from './components/NewBlogForm'
 import Togglable from './components/Togglable'
+import Users from './components/Users'
 
 import { setNotification } from './reducers/notificationReducer'
 import {
@@ -16,6 +18,8 @@ import {
 import { userLogin, logout, setInintialUser } from './reducers/userReducer'
 
 const timeout = 5
+
+const navigationStyle = { padding: '5px' }
 
 const App = () => {
   const blogs = useSelector(state => state.blogs)
@@ -85,7 +89,6 @@ const App = () => {
       dispatch(setNotification(errMsg, timeout))
     }
   }
-
   if (user === null) {
     return (
       <div>
@@ -122,6 +125,12 @@ const App = () => {
     return (
       <>
         <div>
+          <Link style={navigationStyle} to='/'>
+            Home
+          </Link>
+          <Link style={navigationStyle} to='/users'>
+            Users
+          </Link>
           <h2>blogs</h2>
           {notification && <Notification message={notification} />}
 
@@ -129,23 +138,33 @@ const App = () => {
             {user.username} logged in{' '}
             <button onClick={handleLogout}>logout</button>
           </p>
-          <Togglable ref={newBlogFormRef} buttonLabel='new blog'>
-            <h2>create new</h2>
-            <NewBlogForm addBlog={addBlog} />
-          </Togglable>
-          <ul>
-            {[...blogs]
-              .sort((a, b) => b.likes - a.likes)
-              .map(blog => (
-                <Blog
-                  key={blog.id}
-                  blog={blog}
-                  addLike={addLike}
-                  deleteBlog={deleteBlog}
-                  username={user.username}
-                />
-              ))}
-          </ul>
+          <Routes>
+            <Route path='/users' element={<Users />} />
+            <Route
+              path='/'
+              element={
+                <>
+                  <Togglable ref={newBlogFormRef} buttonLabel='new blog'>
+                    <h2>create new</h2>
+                    <NewBlogForm addBlog={addBlog} />
+                  </Togglable>
+                  <ul>
+                    {[...blogs]
+                      .sort((a, b) => b.likes - a.likes)
+                      .map(blog => (
+                        <Blog
+                          key={blog.id}
+                          blog={blog}
+                          addLike={addLike}
+                          deleteBlog={deleteBlog}
+                          username={user.username}
+                        />
+                      ))}
+                  </ul>
+                </>
+              }
+            />
+          </Routes>
         </div>
       </>
     )
