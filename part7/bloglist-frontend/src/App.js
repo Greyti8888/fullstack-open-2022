@@ -22,7 +22,8 @@ import { initializeUsers } from './reducers/usersReducer'
 
 const timeout = 5
 
-const navigationStyle = { padding: '5px' }
+const navigationStyle = { background: 'lightgrey', padding: '5px' }
+const navigationElementStyle = { paddingRight: '5px' }
 
 const App = () => {
   const blogs = useSelector(state => state.blogs)
@@ -143,19 +144,21 @@ const App = () => {
     return (
       <>
         <div>
-          <Link style={navigationStyle} to='/'>
-            Home
-          </Link>
-          <Link style={navigationStyle} to='/users'>
-            Users
-          </Link>
+          <div style={navigationStyle}>
+            <Link style={navigationElementStyle} to='/'>
+              home
+            </Link>
+            <Link style={navigationElementStyle} to='/users'>
+              users
+            </Link>
+            <span>
+              {user.username} logged in{' '}
+              <button onClick={handleLogout}>logout</button>
+            </span>
+          </div>
           <h2>blogs</h2>
           {notification && <Notification message={notification} />}
 
-          <p>
-            {user.username} logged in{' '}
-            <button onClick={handleLogout}>logout</button>
-          </p>
           <Routes>
             <Route path='/users/:id' element={<User user={personData} />} />
             <Route path='/users' element={<Users />} />
