@@ -8,6 +8,7 @@ import NewBlogForm from './components/NewBlogForm'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
 import User from './components/User'
+import BlogDetailed from './components/BlogDetailed'
 
 import { setNotification } from './reducers/notificationReducer'
 import {
@@ -34,8 +35,15 @@ const App = () => {
   const newBlogFormRef = useRef()
   const dispatch = useDispatch()
 
-  const match = useMatch('/users/:id')
-  const person = match ? users.find(user => user.id === match.params.id) : null
+  const personMatch = useMatch('/users/:id')
+  const personData = personMatch
+    ? users.find(user => user.id === personMatch.params.id)
+    : null
+
+  const blogMatch = useMatch('/blogs/:id')
+  const blogData = blogMatch
+    ? blogs.find(blog => blog.id === blogMatch.params.id)
+    : null
 
   useEffect(() => {
     dispatch(setInintialUser())
@@ -149,8 +157,19 @@ const App = () => {
             <button onClick={handleLogout}>logout</button>
           </p>
           <Routes>
-            <Route path='/users/:id' element={<User user={person} />} />
+            <Route path='/users/:id' element={<User user={personData} />} />
             <Route path='/users' element={<Users />} />
+            <Route
+              path='/blogs/:id'
+              element={
+                <BlogDetailed
+                  blog={blogData || {}}
+                  addLike={addLike}
+                  deleteBlog={deleteBlog}
+                  username={user.username}
+                />
+              }
+            />
             <Route
               path='/'
               element={

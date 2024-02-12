@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 
 const Blog = ({ blog, addLike, deleteBlog, username }) => {
+  if (Object.keys(blog).length === 0) return null
   const [showDetails, setShowDetails] = useState(false)
 
   const blogStyle = {
@@ -23,15 +25,15 @@ const Blog = ({ blog, addLike, deleteBlog, username }) => {
   if (showDetails) {
     return (
       <li className='blog' style={blogStyle}>
-        <div className='test'>
+        <div>
           {blog.title} - {blog.author}{' '}
           <button onClick={() => setShowDetails(false)}>hide</button>
         </div>
-        <div>{blog.url}</div>
+        <a href={`//${blog.url}`}>{blog.url}</a>
         <div>
           {blog.likes} <button onClick={() => addLike(blog)}>like</button>
         </div>
-        <div>{blog.user.username}</div>
+        <div>added by {blog.user.username}</div>
         <button style={deleteButtonStyle} onClick={handleDelete}>
           delete
         </button>
@@ -40,10 +42,10 @@ const Blog = ({ blog, addLike, deleteBlog, username }) => {
   } else {
     return (
       <li className='blog' style={blogStyle}>
-        <div className='test1'>
+        <Link to={`/blogs/${blog.id}`}>
           {blog.title} - {blog.author}{' '}
-          <button onClick={() => setShowDetails(true)}>view</button>
-        </div>
+        </Link>
+        <button onClick={() => setShowDetails(true)}>view</button>
       </li>
     )
   }
