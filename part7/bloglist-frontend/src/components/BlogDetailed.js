@@ -26,6 +26,12 @@ const BlogDetailed = ({ blog, addLike, deleteBlog, username }) => {
       <button style={deleteButtonStyle} onClick={handleDelete}>
         delete
       </button>
+      <p style={{ fontWeight: 'bold' }}>comments</p>
+      <ul>
+        {blog.comments.map((comment, index) => (
+          <li key={`${index}+${comment}`}>{comment}</li>
+        ))}
+      </ul>
     </div>
   )
 }

@@ -65,4 +65,16 @@ blogsRouter.delete('/:id', userExtractor, async (req, res) => {
   res.status(204).end()
 })
 
+blogsRouter.post('/:id/comments', userExtractor, async (req, res) => {
+  const blogId = req.params.id
+  const comment = req.body
+
+  const blog = await Blog.findById(blogId)
+  if (!blog) {
+    res.status(404).json({ error: 'blog not found' })
+  }
+  await Blog.findByIdAndUpdate(req.params.id, { $push: { comments: comment } })
+  res.status(204).end()
+})
+
 module.exports = blogsRouter
