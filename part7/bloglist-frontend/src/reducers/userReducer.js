@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import loginService from '../services/login'
 import blogService from '../services/blogs'
 
-const initialState = null
+const initialState = {}
 
 const userSlice = createSlice({
   name: 'user',
@@ -11,7 +11,7 @@ const userSlice = createSlice({
     setUser: (state, action) => action.payload,
     logout: () => {
       window.localStorage.removeItem('loggedBloglistUser')
-      return null
+      return {}
     }
   }
 })

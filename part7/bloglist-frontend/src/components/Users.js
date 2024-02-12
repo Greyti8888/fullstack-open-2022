@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import userServices from '../services/users'
 
 const Users = () => {
   const [users, setUsers] = useState([])
   useEffect(() => {
-    userServices.getAll().then(users => setUsers(users)).catch((err) => console.log(err))
+    userServices
+      .getAll()
+      .then(users => setUsers(users))
+      .catch(err => console.log(err))
   }, [])
   if (!users) return <div>hmmm...</div>
   return (
@@ -20,7 +24,9 @@ const Users = () => {
         <tbody>
           {users.map(user => (
             <tr key={user.id}>
-              <th scope='row'>{user.name}</th>
+              <th scope='row'>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </th>
               <td>{user.blogs.length ? user.blogs.length + 1 : 0}</td>
             </tr>
           ))}

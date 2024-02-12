@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useMatch } from 'react-router-dom'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import NewBlogForm from './components/NewBlogForm'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
+import User from './components/User'
 
 import { setNotification } from './reducers/notificationReducer'
 import {
@@ -16,6 +17,7 @@ import {
   removeBlog
 } from './reducers/blogsReducer'
 import { userLogin, logout, setInintialUser } from './reducers/userReducer'
+import { initializeUsers } from './reducers/usersReducer'
 
 const timeout = 5
 
@@ -26,10 +28,14 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const user = useSelector(state => state.user)
+  const users = useSelector(state => state.users)
   const notification = useSelector(state => state.notification.message)
 
   const newBlogFormRef = useRef()
   const dispatch = useDispatch()
+
+  const match = useMatch('/users/:id')
+  const person = match ? users.find(user => user.id === match.params.id) : null
 
   useEffect(() => {
     dispatch(setInintialUser())
@@ -38,6 +44,10 @@ const App = () => {
   useEffect(() => {
     dispatch(initializeBlogs(user))
   }, [user])
+
+  useEffect(() => {
+    dispatch(initializeUsers())
+  }, [])
 
   const handleLogin = async e => {
     e.preventDefault()
@@ -89,7 +99,7 @@ const App = () => {
       dispatch(setNotification(errMsg, timeout))
     }
   }
-  if (user === null) {
+  if (!user.username) {
     return (
       <div>
         {notification && <Notification message={notification} />}
@@ -139,6 +149,7 @@ const App = () => {
             <button onClick={handleLogout}>logout</button>
           </p>
           <Routes>
+            <Route path='/users/:id' element={<User user={person} />} />
             <Route path='/users' element={<Users />} />
             <Route
               path='/'
