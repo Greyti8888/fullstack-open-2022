@@ -5,6 +5,24 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach",
+      "port": 3003,
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
+    },
+    {
+      "name": "Attach by Process ID",
+      "processId": "${command:PickProcess}",
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
+    },
+    {
       "name": "Launch Program",
       "program": "${workspaceFolder}/index.js",
       "request": "launch",
@@ -13,13 +31,6 @@
       ],
       "type": "node"
     },
-
-    {
-      "type": "node",
-        "request": "attach",
-        "name": "Attach",
-        "port": 9229
-      },
       {
         "name": "Debug Jest Tests",
         "type": "node",

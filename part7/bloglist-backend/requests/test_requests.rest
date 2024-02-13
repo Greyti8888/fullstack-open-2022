@@ -1,5 +1,7 @@
 @url = http://localhost:3003
 
+// Need to login and get token first
+
 # Get All blogs
 GET {{url}}/api/blogs HTTP/1.1
 
@@ -46,6 +48,18 @@ content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwiaWQiOiI2NDE0YTlhYTBmZDEwMDI4ZmIzNzdiZTQiLCJpYXQiOjE2NzkyMzkzNzksImV4cCI6MTY3OTI0Mjk3OX0.72Wxyo6XhJ6VgMdby_aZ7WWBcWZSDzIxiUov4RqpsSg
 
 {}
+
+###
+
+# Add comment
+// api/blogs/:id/comments
+// Need a valid authorizetion token
+
+POST {{url}}/api/blogs/65ca6529021667b1b2095dc6/comments HTTP/1.1
+content-type: text/plain
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwiaWQiOiI2NDE0YTlhYTBmZDEwMDI4ZmIzNzdiZTQiLCJpYXQiOjE3MDc4MzM3MTQsImV4cCI6MTcwNzgzNzMxNH0.0cmntlp7vXHYevSLVUBLxlEwym59jaSjYCP0rb6eLqk
+
+hello
 
 ###
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-const BlogDetailed = ({ blog, addLike, deleteBlog, username }) => {
+const BlogDetailed = ({ blog, addLike, deleteBlog, addComment, username }) => {
   if (Object.keys(blog).length === 0) return null
 
   const deleteButtonStyle = {
@@ -11,6 +11,13 @@ const BlogDetailed = ({ blog, addLike, deleteBlog, username }) => {
     if (window.confirm(`Delete blog ${blog.title} by ${blog.author}?`)) {
       deleteBlog(blog.id)
     }
+  }
+
+  const handleComment = e => {
+    e.preventDefault()
+    const comment = e.target[0].value
+    e.target[0].value = ''
+    if (comment) addComment(blog.id, comment)
   }
 
   return (
@@ -27,6 +34,11 @@ const BlogDetailed = ({ blog, addLike, deleteBlog, username }) => {
         delete
       </button>
       <p style={{ fontWeight: 'bold' }}>comments</p>
+      <form onSubmit={handleComment}>
+        <textarea />
+        <button type='submit'>add comment</button>
+      </form>
+
       <ul>
         {blog.comments.map((comment, index) => (
           <li key={`${index}+${comment}`}>{comment}</li>

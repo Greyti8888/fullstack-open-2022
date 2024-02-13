@@ -15,7 +15,8 @@ import {
   createBlog,
   initializeBlogs,
   increaseLikes,
-  removeBlog
+  removeBlog,
+  comment
 } from './reducers/blogsReducer'
 import { userLogin, logout, setInintialUser } from './reducers/userReducer'
 import { initializeUsers } from './reducers/usersReducer'
@@ -108,6 +109,17 @@ const App = () => {
       dispatch(setNotification(errMsg, timeout))
     }
   }
+
+  const addComment = async (blogId, text) => {
+    try {
+      dispatch(comment(blogId, text))
+      dispatch(setNotification('Comment added', timeout))
+    } catch (err) {
+      console.log(err)
+      const errMsg = err.response.data.error
+      dispatch(setNotification(errMsg, timeout))
+    }
+  }
   if (!user.username) {
     return (
       <div>
@@ -169,6 +181,7 @@ const App = () => {
                   blog={blogData || {}}
                   addLike={addLike}
                   deleteBlog={deleteBlog}
+                  addComment={addComment}
                   username={user.username}
                 />
               }
