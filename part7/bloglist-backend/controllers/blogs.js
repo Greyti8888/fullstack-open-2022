@@ -73,11 +73,11 @@ blogsRouter.post('/:id/comments', userExtractor, async (req, res) => {
   if (!blog) {
     res.status(404).json({ error: 'blog not found' })
   }
-  console.log(comment)
-  const test = await Blog.findByIdAndUpdate(req.params.id, {
+
+  await Blog.findByIdAndUpdate(req.params.id, {
     $push: { comments: comment }
   })
-  console.log(test)
+
   res.status(204).end()
 })
 
