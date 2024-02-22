@@ -1,19 +1,16 @@
 import PropTypes from 'prop-types'
 
-const Notification = ({ message }) => (
-  <div
-    style={{
-      border: 'solid black',
-      padding: '5px',
-      backgroundColor: 'lightgrey'
-    }}
-  >
-    <h3>{message}</h3>
-  </div>
+import { Alert } from '@mui/material'
+
+const Notification = ({ message, type }) => (
+  <Alert style={{ marginBottom: '10px' }} severity={type}>
+    {message}
+  </Alert>
 )
 
 Notification.propTypes = {
-  message: PropTypes.string.isRequired
+  message: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired
 }
 
 export default Notification

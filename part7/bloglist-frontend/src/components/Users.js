@@ -2,6 +2,16 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import userServices from '../services/users'
 
+import {
+  TableContainer,
+  Table,
+  TableRow,
+  TableCell,
+  Typography,
+  TableBody,
+  TableHead
+} from '@mui/material'
+
 const Users = () => {
   const [users, setUsers] = useState([])
   useEffect(() => {
@@ -13,25 +23,29 @@ const Users = () => {
   if (!users) return <div>hmmm...</div>
   return (
     <>
-      <h2>Users</h2>
-      <table>
-        <thead>
-          <tr>
-            <th scope='col'></th>
-            <th scope='col'>blogs created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user.id}>
-              <th scope='row'>
-                <Link to={`/users/${user.id}`}>{user.name}</Link>
-              </th>
-              <td>{user.blogs.length ? user.blogs.length + 1 : 0}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Typography variant='h2'>users</Typography>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell scope='col'>username</TableCell>
+              <TableCell scope='col'>blogs created</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map(user => (
+              <TableRow key={user.id}>
+                <TableCell scope='row'>
+                  <Link to={`/users/${user.id}`}>{user.name}</Link>
+                </TableCell>
+                <TableCell>
+                  {user.blogs.length ? user.blogs.length + 1 : 0}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   )
 }
