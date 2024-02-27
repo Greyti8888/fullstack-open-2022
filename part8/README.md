@@ -2,4 +2,4 @@
 
 | Exercises | Folder  |
 | --------- | ------- |
-| 8.1       | library |
+| 8.1 - 8.2 | library |
