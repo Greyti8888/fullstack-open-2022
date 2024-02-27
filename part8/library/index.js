@@ -101,7 +101,8 @@ const typeDefs = `
   type Query {
     bookCount: Int,
     authorCount: Int,
-    allBooks : [Book]
+    allBooks : [Book],
+    allAuthors: [Author]
   }
 
   type Book {
@@ -110,13 +111,29 @@ const typeDefs = `
     published: String,
     genres: [String]
   }
+
+  type Author {
+    name: String,
+    id: String,
+    born: Int,
+    bookCount: Int
+  }
 `
 
 const resolvers = {
   Query: {
     bookCount: () => books.length,
     authorCount: () => authors.length,
-    allBooks: () => books
+    allBooks: () => books,
+    allAuthors: () => authors
+  },
+
+  Author: {
+    bookCount: ({ name }) =>
+      books.reduce(
+        (total, book) => (book.author === name ? total + 1 : total),
+        0
+      )
   }
 }
 
