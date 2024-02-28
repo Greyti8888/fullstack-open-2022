@@ -1,5 +1,6 @@
 # Solutions to part8 exercises
 
-| Exercises | Folder  |
-| --------- | ------- |
-| 8.1 - 8.6 | library |
+| Exercises  | Folder           |
+| ---------- | ---------------- |
+| 8.1 - 8.7  | library          |
+| 8.8 - 8.10 | library-frontend |
