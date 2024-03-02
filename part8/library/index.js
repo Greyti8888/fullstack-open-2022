@@ -110,7 +110,7 @@ const typeDefs = `
   type Book {
     title: String!,
     author: Author!,
-    published: String!,
+    published: Int!,
     id: ID!,
     genres: [String!]!
   }
@@ -161,6 +161,22 @@ const resolvers = {
 
   Mutation: {
     addBook: async (_root, args) => {
+      if (args.author.length < 4) {
+        throw new GraphQLError('"author" length must greater than 3', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: { author: args.author }
+          }
+        })
+      }
+      if (args.title.length < 5) {
+        throw new GraphQLError('"title" length must greater than 4', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: { title: args.title }
+          }
+        })
+      }
       try {
         let author = await Author.findOne({ name: args.author })
         if (!author) {
@@ -174,7 +190,7 @@ const resolvers = {
         throw new GraphQLError('Saving book failed', {
           extensions: {
             code: 'BAD_USER_INPUT',
-            invalidArgs: [...args],
+            invalidArgs: args,
             error
           }
         })
