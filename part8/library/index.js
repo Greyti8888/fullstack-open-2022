@@ -7,6 +7,7 @@ require('dotenv').config()
 
 const Author = require('./models/author')
 const Book = require('./models/book')
+const author = require('./models/author')
 
 const MONGODB_URI = process.env.MONGODB_URI
 const PORT = process.env.PORT
@@ -137,21 +138,25 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    bookCount: () => books.length,
-    authorCount: () => authors.length,
-    allBooks: (_root, { author, genre }) => {
-      if (author && genre) {
-        return books.filter(
-          (book) =>
-            book.author === author && book.genres.find((gen) => gen === genre)
-        )
-      } else if (author && !genre) {
-        return books.filter((book) => book.author === author)
-      } else if (!author && genre) {
-        return books.filter((book) => book.genres.find((gen) => gen === genre))
-      } else return books
+    bookCount: async () => Book.countDocuments(),
+    authorCount: async () => Author.countDocuments(),
+    allBooks: async (_root, { author: authorName, genre }) => {
+      if (authorName && genre) {
+        const author = await Author.findOne({ name: authorName })
+        if (!author) return []
+        return Book.find({
+          author: author._id,
+          genres: { $in: genre }
+        }).populate('author')
+      } else if (authorName && !genre) {
+        const author = await Author.findOne({ name: authorName })
+        if (!author) return []
+        return Book.find({ author }).populate('author')
+      } else if (!authorName && genre) {
+        return Book.find({ genres: { $in: genre } }).populate('author')
+      } else return Book.find({}).populate('author')
     },
-    allAuthors: () => authors
+    allAuthors: async () => Author.find({})
   },
 
   Mutation: {
@@ -175,20 +180,22 @@ const resolvers = {
         })
       }
     },
-    editAuthor: (_root, args) => {
-      const author = authors.find((author) => author.name === args.name)
+    editAuthor: async (_root, args) => {
+      let author = await Author.findOne({ name: args.name })
       if (!author) return null
       author.born = args.setBornTo
+      await author.save()
       return author
     }
   },
 
   Author: {
-    bookCount: ({ name }) =>
-      books.reduce(
-        (total, book) => (book.author === name ? total + 1 : total),
-        0
-      )
+    bookCount: async (args) => {
+      const author = await Author.findOne({ name: args.name })
+      if (!author) return null
+      const count = await Book.find({ author: author._id }).countDocuments()
+      return count
+    }
   }
 }
 
