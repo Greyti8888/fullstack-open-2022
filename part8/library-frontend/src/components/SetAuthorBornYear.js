@@ -6,16 +6,9 @@ import { SET_AUTHOR_BORN_YEAR, ALL_AUTHORS } from '../queries'
 const SetAuthorBornYear = ({ authors }) => {
   const [name, setName] = useState('')
   const [bornYear, setBornYear] = useState('')
-  const [setYear, { loading, error, data }] = useMutation(
-    SET_AUTHOR_BORN_YEAR,
-    {
-      refetchQueries: [{ query: ALL_AUTHORS }]
-    }
-  )
-
-  if (loading) console.log('Updating born year...')
-  if (data) console.log(data)
-  if (error) console.log(error)
+  const [setYear] = useMutation(SET_AUTHOR_BORN_YEAR, {
+    refetchQueries: [{ query: ALL_AUTHORS }]
+  })
 
   const submit = (e) => {
     e.preventDefault()

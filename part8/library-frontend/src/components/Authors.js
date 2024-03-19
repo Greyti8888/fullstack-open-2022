@@ -30,7 +30,7 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <SetAuthorBornYear authors={authors} />
+      {props.token ? <SetAuthorBornYear authors={authors} /> : null}
     </div>
   )
 }
