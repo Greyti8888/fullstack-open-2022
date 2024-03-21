@@ -1,7 +1,19 @@
-import { useState } from 'react'
+import { useQuery } from '@apollo/client'
+import { useEffect, useState } from 'react'
+import { USER } from '../queries'
 
-const Books = (props) => {
+const FavoriteGenreBooks = (props) => {
   const [filter, setFilter] = useState(null)
+  const user = useQuery(USER, {
+    onError: (err) => console.log(err)
+  })
+
+  useEffect(() => {
+    const favoriteGenre = user.data?.me?.favoriteGenre
+    if (!user.loading && favoriteGenre) {
+      setFilter(favoriteGenre)
+    }
+  }, [user])
 
   if (!props.show) {
     return null
@@ -12,17 +24,13 @@ const Books = (props) => {
   }
 
   const books = props.books.data.allBooks
-  const genres = new Set()
-  books.forEach((book) => book.genres.forEach((genre) => genres.add(genre)))
 
   return (
     <div>
-      <h2>books</h2>
-      {filter && (
-        <div>
-          in genre: <b>{filter}</b>
-        </div>
-      )}
+      <h2>recommendations</h2>
+      <div>
+        books in your favorite genre: <b>{filter}</b>
+      </div>
       <table>
         <tbody>
           <tr>
@@ -41,18 +49,8 @@ const Books = (props) => {
             ))}
         </tbody>
       </table>
-      {[...genres].map((genre) => (
-        <button
-          key={genre}
-          value={genre}
-          onClick={(e) => setFilter(e.target.value)}
-        >
-          {genre}
-        </button>
-      ))}
-      <button onClick={() => setFilter(null)}>all genres</button>
     </div>
   )
 }
 
-export default Books
+export default FavoriteGenreBooks

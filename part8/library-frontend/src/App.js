@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
+import FavoriteGenreBooks from './components/FavoriteGenreBooks'
 import { ALL_AUTHORS, ALL_BOOKS } from './queries'
 
 const App = () => {
@@ -16,6 +17,11 @@ const App = () => {
   const books = useQuery(ALL_BOOKS, {
     onError: (err) => console.log(err)
   })
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem('library-token')
+    if (savedToken) setToken(savedToken)
+  }, [])
 
   const handleLogout = async () => {
     setToken(null)
@@ -29,6 +35,11 @@ const App = () => {
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         {token && <button onClick={() => setPage('add')}>add book</button>}
+        {token && (
+          <button onClick={() => setPage('favoriteGenre')}>
+            recommendations
+          </button>
+        )}
         {token ? (
           <button onClick={handleLogout}>logout</button>
         ) : (
@@ -42,7 +53,9 @@ const App = () => {
 
       <NewBook show={page === 'add'} />
 
-      <Login show={page === 'login'} setToken={setToken} />
+      <FavoriteGenreBooks show={page === 'favoriteGenre'} books={books} />
+
+      <Login show={page === 'login'} token={token} setToken={setToken} />
     </div>
   )
 }
