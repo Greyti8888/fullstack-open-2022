@@ -1,5 +1,9 @@
 const { GraphQLError } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
+const jwt = require('jsonwebtoken')
+
+const JWT_SECRET = process.env.JWT_SECRET
+
 const pubsub = new PubSub()
 
 const Author = require('./models/author')
