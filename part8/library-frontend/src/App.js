@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { useQuery, useSubscription } from '@apollo/client'
 
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
 import FavoriteGenreBooks from './components/FavoriteGenreBooks'
-import { ALL_AUTHORS, ALL_BOOKS } from './queries'
+import { ALL_AUTHORS, ALL_BOOKS, BOOK_ADDED } from './queries'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -15,6 +15,13 @@ const App = () => {
     onError: (err) => console.log(err)
   })
   const books = useQuery(ALL_BOOKS, {
+    onError: (err) => console.log(err)
+  })
+
+  useSubscription(BOOK_ADDED, {
+    onData: (res) => {
+      console.log(res)
+    },
     onError: (err) => console.log(err)
   })
 

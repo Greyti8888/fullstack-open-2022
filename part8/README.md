@@ -6,3 +6,5 @@
 | 8.8 - 8.12  | library-frontend |
 | 8.13 - 8.16 | library          |
 | 8.17 - 8.20 | library-frontend |
+| 8.23        | library          |
+| 8.24        | library-frontend |
