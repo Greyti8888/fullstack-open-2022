@@ -30,7 +30,7 @@ const resolvers = {
         return Book.find({ genres: { $in: genre } }).populate('author')
       } else return Book.find({}).populate('author')
     },
-    allAuthors: async () => Author.find({}),
+    allAuthors: async () => Author.find({}).populate('books'),
     me: async (_root, _args, { currentUser }) => currentUser
   },
 
@@ -65,8 +65,13 @@ const resolvers = {
           author = new Author({ name: args.author })
           await author.save()
         }
+
         const book = new Book({ ...args, author })
         await book.save()
+
+        await Author.findByIdAndUpdate(author._id, {
+          $push: { books: book._id }
+        })
 
         pubsub.publish('BOOK_ADDED', { bookAdded: book })
 
@@ -140,12 +145,7 @@ const resolvers = {
   },
 
   Author: {
-    bookCount: async (args) => {
-      const author = await Author.findOne({ name: args.name })
-      if (!author) return null
-      const count = await Book.find({ author: author._id }).countDocuments()
-      return count
-    }
+    bookCount: async (author) => author.books.length
   }
 }
 

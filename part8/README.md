@@ -7,4 +7,4 @@
 | 8.13 - 8.16 | library          |
 | 8.17 - 8.20 | library-frontend |
 | 8.23        | library          |
-| 8.24 - 8.25 | library-frontend |
+| 8.24 - 8.26 | library-frontend |
