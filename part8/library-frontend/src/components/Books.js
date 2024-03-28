@@ -1,36 +1,48 @@
-import { useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { useState } from 'react'
+import { useQuery, useSubscription } from '@apollo/client'
 
-import { ALL_BOOKS } from '../queries'
+import { ALL_BOOKS, BOOK_ADDED } from '../queries'
+import { updateCache } from '../helpers'
 
 const Books = (props) => {
   const [genre, setGenre] = useState(undefined)
   const [allGenres, setAllGenres] = useState([])
-  const booksData = useQuery(ALL_BOOKS, {
-    variables: { genre },
-    onError: (err) => console.log(err)
-  })
-  const booksDataForGenres = useQuery(ALL_BOOKS, {
+  const { refetch: filterBooks, ...booksData } = useQuery(ALL_BOOKS, {
     onError: (err) => console.log(err),
     onCompleted: (data) => {
-      const genres = new Set()
-      data.allBooks.forEach((book) =>
-        book.genres.forEach((genre) => genres.add(genre))
-      )
-      setAllGenres(genres)
+      if (!allGenres.length) {
+        const genres = new Set()
+        data.allBooks.forEach((book) =>
+          book.genres.forEach((genre) => genres.add(genre))
+        )
+        setAllGenres(genres)
+      }
     }
   })
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const addedBook = data.data.bookAdded
+      if (addedBook.genres.includes(genre) || genre === undefined) {
+        updateCache(
+          client.cache,
+          { query: ALL_BOOKS, variables: { genre } },
+          addedBook
+        )
+      }
+    },
+    onError: (err) => console.log(err)
+  })
+
   if (!props.show) {
     return null
   }
 
-  if (booksData.loading || booksDataForGenres.loading) {
+  if (booksData.loading) {
     return 'Loading...'
   }
 
   const books = booksData.data.allBooks
-
-  //books.forEach((book) => book.genres.forEach((genre) => genres.add(genre)))
 
   return (
     <div>
@@ -60,12 +72,22 @@ const Books = (props) => {
         <button
           key={genre}
           value={genre}
-          onClick={(e) => setGenre(e.target.value)}
+          onClick={(e) => {
+            setGenre(e.target.value)
+            filterBooks({ genre: e.target.value })
+          }}
         >
           {genre}
         </button>
       ))}
-      <button onClick={() => setGenre(undefined)}>all genres</button>
+      <button
+        onClick={(e) => {
+          setGenre(undefined)
+          filterBooks({ genre: undefined })
+        }}
+      >
+        all genres
+      </button>
     </div>
   )
 }

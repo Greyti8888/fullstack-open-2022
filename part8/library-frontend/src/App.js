@@ -1,38 +1,22 @@
 import { useEffect, useState } from 'react'
-import { useQuery, useSubscription } from '@apollo/client'
+import { useApolloClient } from '@apollo/client'
 
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
 import FavoriteGenreBooks from './components/FavoriteGenreBooks'
-import { ALL_AUTHORS, ALL_BOOKS, BOOK_ADDED } from './queries'
 
 const App = () => {
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null)
-  const { client, ...authors } = useQuery(ALL_AUTHORS, {
-    onError: (err) => console.log(err)
-  })
-
-  useSubscription(BOOK_ADDED, {
-    onData: ({ data, client }) => {
-      const addedBook = data.data.bookAdded
-      console.log(`New book "${addedBook.title}" was added`)
-
-      client.cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
-        return {
-          allBooks: allBooks.concat(addedBook)
-        }
-      })
-    },
-    onError: (err) => console.log(err)
-  })
 
   useEffect(() => {
     const savedToken = localStorage.getItem('library-token')
     if (savedToken) setToken(savedToken)
   }, [])
+
+  const client = useApolloClient()
 
   const handleLogout = async () => {
     setToken(null)
@@ -58,7 +42,7 @@ const App = () => {
         )}
       </div>
 
-      <Authors show={page === 'authors'} authors={authors} token={token} />
+      <Authors show={page === 'authors'} token={token} />
       <Books show={page === 'books'} />
       <NewBook show={page === 'add'} />
       <FavoriteGenreBooks show={page === 'favoriteGenre'} />

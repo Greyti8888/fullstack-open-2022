@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { useQuery, useSubscription } from '@apollo/client'
 
-import { USER, ALL_BOOKS } from '../queries'
+import { USER, ALL_BOOKS, BOOK_ADDED } from '../queries'
+import { updateCache } from '../helpers'
 
 const FavoriteGenreBooks = (props) => {
   const [genre, setGenre] = useState(null)
@@ -19,6 +20,20 @@ const FavoriteGenreBooks = (props) => {
       setGenre(favoriteGenre)
     }
   }, [user])
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const addedBook = data.data.bookAdded
+      if (addedBook.genres.includes(genre) || genre === undefined) {
+        updateCache(
+          client.cache,
+          { query: ALL_BOOKS, variables: { genre } },
+          addedBook
+        )
+      }
+    },
+    onError: (err) => console.log(err)
+  })
 
   if (!props.show) {
     return null
