@@ -14,9 +14,6 @@ const App = () => {
   const { client, ...authors } = useQuery(ALL_AUTHORS, {
     onError: (err) => console.log(err)
   })
-  const books = useQuery(ALL_BOOKS, {
-    onError: (err) => console.log(err)
-  })
 
   useSubscription(BOOK_ADDED, {
     onData: ({ data, client }) => {
@@ -62,13 +59,9 @@ const App = () => {
       </div>
 
       <Authors show={page === 'authors'} authors={authors} token={token} />
-
-      <Books show={page === 'books'} books={books} />
-
+      <Books show={page === 'books'} />
       <NewBook show={page === 'add'} />
-
-      <FavoriteGenreBooks show={page === 'favoriteGenre'} books={books} />
-
+      <FavoriteGenreBooks show={page === 'favoriteGenre'} />
       <Login show={page === 'login'} token={token} setToken={setToken} />
     </div>
   )

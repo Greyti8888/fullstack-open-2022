@@ -1,26 +1,43 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
+
+import { ALL_BOOKS } from '../queries'
 
 const Books = (props) => {
-  const [filter, setFilter] = useState(null)
-
+  const [genre, setGenre] = useState(undefined)
+  const [allGenres, setAllGenres] = useState([])
+  const booksData = useQuery(ALL_BOOKS, {
+    variables: { genre },
+    onError: (err) => console.log(err)
+  })
+  const booksDataForGenres = useQuery(ALL_BOOKS, {
+    onError: (err) => console.log(err),
+    onCompleted: (data) => {
+      const genres = new Set()
+      data.allBooks.forEach((book) =>
+        book.genres.forEach((genre) => genres.add(genre))
+      )
+      setAllGenres(genres)
+    }
+  })
   if (!props.show) {
     return null
   }
 
-  if (props.books.loading) {
+  if (booksData.loading || booksDataForGenres.loading) {
     return 'Loading...'
   }
 
-  const books = props.books.data.allBooks
-  const genres = new Set()
-  books.forEach((book) => book.genres.forEach((genre) => genres.add(genre)))
+  const books = booksData.data.allBooks
+
+  //books.forEach((book) => book.genres.forEach((genre) => genres.add(genre)))
 
   return (
     <div>
       <h2>books</h2>
-      {filter && (
+      {genre && (
         <div>
-          in genre: <b>{filter}</b>
+          in genre: <b>{genre}</b>
         </div>
       )}
       <table>
@@ -30,27 +47,25 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {books
-            .filter((book) => (filter ? book.genres.includes(filter) : true))
-            .map((book) => (
-              <tr key={book.title}>
-                <td>{book.title}</td>
-                <td>{book.author.name}</td>
-                <td>{book.published}</td>
-              </tr>
-            ))}
+          {books.map((book) => (
+            <tr key={book.title}>
+              <td>{book.title}</td>
+              <td>{book.author.name}</td>
+              <td>{book.published}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
-      {[...genres].map((genre) => (
+      {[...allGenres].map((genre) => (
         <button
           key={genre}
           value={genre}
-          onClick={(e) => setFilter(e.target.value)}
+          onClick={(e) => setGenre(e.target.value)}
         >
           {genre}
         </button>
       ))}
-      <button onClick={() => setFilter(null)}>all genres</button>
+      <button onClick={() => setGenre(undefined)}>all genres</button>
     </div>
   )
 }
