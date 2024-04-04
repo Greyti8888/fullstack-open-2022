@@ -1,0 +1,13 @@
+@url = http://localhost:3003
+
+GET {{url}}/hello HTTP/1.1
+
+###
+
+POST {{url}}/exercises HTTP/1.1
+content-type: application/json
+
+{
+  "daily_exercises": [1, 0, 2, 0, 3, 0, 2.5],
+  "target": 2.5
+}

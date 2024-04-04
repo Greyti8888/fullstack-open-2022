@@ -20,7 +20,8 @@ const calculateExercises = (days: number[], target: number): Result => {
     } else continue;
   }
   if (!daysIsNumbersArray) throw new Error('bad user input');
-  if (Number.isNaN(target)) throw new Error('bad user input');
+  if (typeof target !== 'number' || Number.isNaN(target))
+    throw new Error('bad user input');
   const periodLength = days.length;
   const trainingDays = days.filter((day) => day > 0).length;
   const average = days.reduce((prev, curr) => prev + curr, 0) / periodLength;
@@ -71,3 +72,5 @@ if (process.argv[2] === 'cl') {
 
   calculateExercises(days, target);
 }
+
+export default calculateExercises;

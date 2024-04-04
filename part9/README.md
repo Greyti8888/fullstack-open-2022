@@ -2,4 +2,4 @@
 
 | Exercises | Folder     |
 | --------- | ---------- |
-| 9.1 - 9.5 | firstSteps |
+| 9.1 - 9.7 | firstSteps |
