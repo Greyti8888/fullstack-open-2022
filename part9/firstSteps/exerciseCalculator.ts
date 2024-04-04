@@ -33,8 +33,8 @@ const calculateExercises = (days: number[], target: number): Result => {
     [3, 'good']
   ]
 
-  let rating: number
-  let ratingDiscription: string
+  let rating!: number
+  let ratingDiscription!: string
 
   if (averageTargetRatio <= 0.5) {
     rating = ratingArray[0][0]
