@@ -6,8 +6,8 @@
   "scripts": {
     "start": "ts-node index.ts",
     "dev": "ts-node-dev index.ts",
-    "calculateBmi": "ts-node bmiCalculator.ts",
-    "calculateExercises": "ts-node exerciseCalculator.ts"
+    "calculateBmi": "ts-node bmiCalculator.ts cl",
+    "calculateExercises": "ts-node exerciseCalculator.ts cl"
   },
   "author": "",
   "license": "ISC",

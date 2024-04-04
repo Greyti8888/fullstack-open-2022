@@ -57,14 +57,17 @@ const calculateExercises = (days: number[], target: number): Result => {
     average
   }
 
+  console.log(output)
   return output
 }
 
-const target: number = Number(process.argv[2])
-const days: number[] = []
-process.argv.forEach((value, i) => {
-  if (i === 0 || i === 1 || i === 2) return
-  else days.push(Number(value))
-})
+if (process.argv[2] === 'cl') {
+  const target: number = Number(process.argv[3])
+  const days: number[] = []
+  process.argv.forEach((value, i) => {
+    if (i === 0 || i === 1 || i === 2 || i === 3) return
+    else days.push(Number(value))
+  })
 
-console.log(calculateExercises(days, target))
+  calculateExercises(days, target)
+}
