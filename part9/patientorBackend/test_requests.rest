@@ -13,5 +13,6 @@ content-type: application/json
   "name": "Test",
   "dateOfBirth": "2011-11-11",
   "gender": "male",
+  "ssn": "1",
   "occupation": "tester"
 }
