@@ -1,6 +1,6 @@
 # Solutions to part9 exercises
 
-| Exercises | Folder           |
-| --------- | ---------------- |
-| 9.1 - 9.7 | firstSteps       |
-| 9.8 - 9.9 | patientorBackend |
+| Exercises  | Folder           |
+| ---------- | ---------------- |
+| 9.1 - 9.7  | firstSteps       |
+| 9.8 - 9.10 | patientorBackend |
