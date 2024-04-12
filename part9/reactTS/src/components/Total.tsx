@@ -1,9 +1,5 @@
-type TotalExercises = {
-  total: number;
-};
-
-const Total = (props: TotalExercises) => {
-  return <p>Number of exercises {props.total}</p>;
+const Total = ({ total }: { total: number }) => {
+  return <p>Number of exercises {total}</p>;
 };
 
 export default Total;

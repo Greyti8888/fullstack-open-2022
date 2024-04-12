@@ -1,20 +1,9 @@
-type Part = {
-  name: string;
-  exerciseCount: number;
-};
+import Part from "./Part";
 
-type courseParts = {
-  courseParts: Part[];
-};
+import { CoursePart } from "../types";
 
-const Content = (props: courseParts) => {
-  const parts = props.courseParts.map((part) => {
-    return (
-      <p>
-        {part.name}: {part.exerciseCount}
-      </p>
-    );
-  });
+const Content = ({ courseParts }: { courseParts: CoursePart[] }) => {
+  const parts = courseParts.map((part) => <Part key={part.name} {...part} />);
   return parts;
 };
 
