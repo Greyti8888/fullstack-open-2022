@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 
 import diariesService from "../services/diaries";
 
-import { Weather, Visibility, NewDiaryEntry } from "../types";
+import { Weather, Visibility, NewDiaryEntry, DiaryEntry } from "../types";
 
 const NewDiary = () => {
   const [addNew, setAddNew] = useState(false);
@@ -11,6 +12,7 @@ const NewDiary = () => {
   const [weather, setWeather] = useState<Weather | "">("");
   const [visibility, setVisibility] = useState<Visibility | "">("");
   const [comment, setComment] = useState<string>("");
+  const [error, setError] = useState("");
 
   const queryClient = useQueryClient();
 
@@ -18,10 +20,15 @@ const NewDiary = () => {
     mutationFn: diariesService.add,
     onSuccess: (res) => {
       console.log(res);
+      console.log("success");
+      setAddNew(false);
       queryClient.invalidateQueries({ queryKey: ["diaries"] });
     },
     onError: (err) => {
-      console.error(err);
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data);
+        setTimeout(() => setError(""), 5000);
+      } else console.log(err);
     },
   });
 
@@ -35,13 +42,12 @@ const NewDiary = () => {
         comment,
       };
       addDiary.mutate(payload);
-      setAddNew(false);
     }
   };
-
   if (addNew) {
     return (
       <>
+        {error && <div style={{ color: "red", margin: "5px 0" }}>{error}</div>}
         <form
           style={{
             display: "flex",
