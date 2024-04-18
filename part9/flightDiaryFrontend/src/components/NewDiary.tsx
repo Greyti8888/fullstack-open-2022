@@ -4,7 +4,7 @@ import axios from "axios";
 
 import diariesService from "../services/diaries";
 
-import { Weather, Visibility, NewDiaryEntry, DiaryEntry } from "../types";
+import { Weather, Visibility, NewDiaryEntry } from "../types";
 
 const NewDiary = () => {
   const [addNew, setAddNew] = useState(false);
@@ -52,50 +52,52 @@ const NewDiary = () => {
           style={{
             display: "flex",
             flexDirection: "column",
-            width: "250px",
+
             border: "1px solid black",
             margin: "0 0 5px 0",
             padding: "5px",
           }}
           onSubmit={handleSubmit}
         >
-          <label htmlFor="date">Date:</label>
-          <input
-            id="date"
-            type="date"
-            onChange={(e) => setDate(e.target.value)}
-          />
-          <label htmlFor="weather">Weather:</label>
-          <select
+          <fieldset
             style={{ margin: "0 0 5px 0" }}
-            id="weather "
-            name="weather"
-            onChange={(e) => setWeather(e.target.value as Weather)}
+            onChange={(e) => setDate((e.target as HTMLInputElement).value)}
           >
-            <option value=""></option>
-            {Object.values(Weather).map((v) => (
-              <option key={v} value={v}>
-                {v}
-              </option>
+            <legend>Date: </legend>
+            <input id="date" type="date" />
+          </fieldset>
+
+          <fieldset
+            style={{ margin: "0 0 5px 0" }}
+            onChange={(e) =>
+              setWeather((e.target as HTMLInputElement).value as Weather)
+            }
+          >
+            <legend>Weather: </legend>
+            {Object.values(Weather).map((w) => (
+              <label key={w}>
+                {w}
+                <input type="radio" id={w} name="weather" value={w} />
+              </label>
             ))}
-          </select>
-          <label htmlFor="weather">Visibility:</label>
-          <select
+          </fieldset>
+          <fieldset
             style={{ margin: "0 0 5px 0" }}
-            id="visibility"
-            name="visibility"
-            onChange={(e) => setVisibility(e.target.value as Visibility)}
+            onChange={(e) =>
+              setVisibility((e.target as HTMLInputElement).value as Visibility)
+            }
           >
-            <option value=""></option>
+            <legend>Visibility: </legend>
             {Object.values(Visibility).map((v) => (
-              <option key={v} value={v}>
+              <label key={v}>
                 {v}
-              </option>
+                <input type="radio" id={v} name="visibility" value={v} />
+              </label>
             ))}
-          </select>
-          <textarea
-            placeholder="Your comments..."
-            style={{ resize: "vertical", margin: "0 0 5px 0" }}
+          </fieldset>
+          <input
+            placeholder="Your comment..."
+            style={{ margin: "0 0 5px 0" }}
             onChange={(e) => setComment(e.target.value)}
           />
           <button style={{ margin: "0 0 5px 0" }} type="submit">
