@@ -7,3 +7,4 @@
 | 9.14 - 9.15 | reactTS             |
 | 9.16 - 9.19 | flightDiaryFrontend |
 | 9.20        | patientorBackend    |
+| 9.21        | patientorFrontend   |
