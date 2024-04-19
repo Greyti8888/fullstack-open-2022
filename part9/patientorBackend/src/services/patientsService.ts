@@ -1,14 +1,8 @@
-import patientsData from '../../data/patients';
 import { v1 as uuid } from 'uuid';
 
 import { Patient, NonSensativePatient, NewPatient } from '../../types';
 
-const patientDataWithEntries = patientsData.map((patient) => ({
-  ...patient,
-  entries: [],
-}));
-
-const patients: Patient[] = patientDataWithEntries;
+import patients from '../../data/patients-full';
 
 const getAllExludeSSN = (): NonSensativePatient[] => {
   return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({

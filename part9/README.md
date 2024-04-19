@@ -8,3 +8,4 @@
 | 9.16 - 9.19 | flightDiaryFrontend |
 | 9.20        | patientorBackend    |
 | 9.21        | patientorFrontend   |
+| 9.22        | patientorBackend    |
