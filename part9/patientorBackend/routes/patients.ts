@@ -1,7 +1,8 @@
 import express from 'express';
 
 import patientsService from '../src/services/patientsService';
-import { toNewPatient } from '../utils';
+import { toNewPatient } from '../helpers/newPatient';
+import { toNewEntry } from '../helpers/newEntry';
 
 const router = express.Router();
 
@@ -19,8 +20,18 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   const newPatient = toNewPatient(req.body);
-  const addedPatient = patientsService.add(newPatient);
+  const addedPatient = patientsService.addPatient(newPatient);
   res.send(addedPatient);
+});
+
+router.post('/:id/entries', (req, res) => {
+  const id = req.params.id;
+  const patient = patientsService.getOne(id);
+  if (patient) {
+    const newEntry = toNewEntry(req.body);
+    const addedEntry = patientsService.addEntry(patient, newEntry);
+    res.send(addedEntry);
+  } else res.status(400).send;
 });
 
 export default router;

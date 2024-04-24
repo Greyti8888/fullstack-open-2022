@@ -1,7 +1,13 @@
 @url = http://localhost:3001
+@patientId = d2773336-f723-11e9-8f0b-362b9e155667
 
 # Get all patients
 GET {{url}}/api/patients HTTP/1.1
+
+###
+
+# Get one patients
+GET {{url}}/api/patients/{{patientId}} HTTP/1.1
 
 ###
 
@@ -15,4 +21,19 @@ content-type: application/json
   "gender": "male",
   "ssn": "1",
   "occupation": "tester"
+}
+
+###
+
+# Add entry
+
+POST {{url}}/api/patients/{{patientId}}/entries HTTP/1.1
+content-type: application/json
+
+{
+  "date": "2019-10-20",
+  "specialist": "MD Test",
+  "type": "HealthCheck",
+  "description": "Test",
+  "healthCheckRating": 1
 }

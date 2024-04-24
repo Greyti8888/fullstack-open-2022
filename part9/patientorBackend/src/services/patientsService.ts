@@ -1,6 +1,12 @@
 import { v1 as uuid } from 'uuid';
 
-import { Patient, NonSensativePatient, NewPatient } from '../../types';
+import {
+  Patient,
+  NonSensativePatient,
+  NewPatient,
+  EntryWithoutId,
+  Entry,
+} from '../../types';
 
 import patients from '../../data/patients-full';
 
@@ -19,7 +25,7 @@ const getOne = (id: string): Patient | undefined => {
   return patient;
 };
 
-const add = (patient: NewPatient) => {
+const addPatient = (patient: NewPatient) => {
   const id = uuid();
   const newPatient: Patient = {
     id,
@@ -29,8 +35,19 @@ const add = (patient: NewPatient) => {
   return newPatient;
 };
 
+const addEntry = (patient: Patient, entry: EntryWithoutId) => {
+  const id = uuid();
+  const newEntry: Entry = {
+    id,
+    ...entry,
+  };
+  patient.entries.push(newEntry);
+  return newEntry;
+};
+
 export default {
   getAllExludeSSN,
   getOne,
-  add,
+  addPatient,
+  addEntry,
 };

@@ -10,3 +10,4 @@
 | 9.21        | patientorFrontend   |
 | 9.22        | patientorBackend    |
 | 9.23 - 9.25 | patientorFrontend   |
+| 9.26        | patientorBackend    |

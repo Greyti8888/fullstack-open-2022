@@ -1,76 +1,30 @@
-import { NewPatient, Gender } from './types';
+import { Gender, Types } from './types';
 
-const isString = (text: unknown): text is string => {
+export const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`,
+  );
+};
+
+export const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
 };
-
-const isDate = (date: string): boolean => {
+export const isNumber = (value: unknown): value is number => {
+  return typeof value === 'number' || value instanceof Number;
+};
+export const isDate = (date: string): boolean => {
   return Boolean(Date.parse(date));
 };
-
-const isGender = (gender: string): gender is Gender => {
+export const isObject = (obj: unknown): obj is object => {
+  return obj !== null && typeof obj === 'object';
+};
+export const isGender = (gender: string): gender is Gender => {
   return Object.values(Gender)
     .map((v) => v.toString())
     .includes(gender);
 };
-
-const parseName = (name: unknown): string => {
-  if (!isString(name)) {
-    throw new Error('Incorrect name: ' + name);
-  }
-  return name;
-};
-
-const parseDateOfBirth = (dateOfBirth: unknown): string => {
-  if (!isString(dateOfBirth) || !isDate(dateOfBirth)) {
-    throw new Error('Incorrect date of birth: ' + dateOfBirth);
-  }
-  return dateOfBirth;
-};
-
-const parseGender = (gender: unknown): string => {
-  if (!isString(gender) || !isGender(gender)) {
-    throw new Error('Incorrect gender: ' + gender);
-  }
-  return gender;
-};
-
-const parseSSN = (ssn: unknown): string => {
-  if (!isString(ssn)) {
-    throw new Error('Incorrect ssn: ' + ssn);
-  }
-  return ssn;
-};
-
-const parseOcupation = (ocupation: unknown): string => {
-  if (!isString(ocupation)) {
-    throw new Error('Incorrect ssn: ' + ocupation);
-  }
-  return ocupation;
-};
-
-export const toNewPatient = (data: unknown): NewPatient => {
-  if (!data || typeof data !== 'object') {
-    throw new Error('Incorrect or missing data');
-  }
-
-  if (
-    'name' in data &&
-    'dateOfBirth' in data &&
-    'gender' in data &&
-    'ssn' in data &&
-    'occupation' in data
-  ) {
-    const newPatient: NewPatient = {
-      name: parseName(data.name),
-      dateOfBirth: parseDateOfBirth(data.dateOfBirth),
-      gender: parseGender(data.gender),
-      ssn: parseSSN(data.ssn),
-      occupation: parseOcupation(data.occupation),
-      entries: [],
-    };
-    return newPatient;
-  }
-
-  throw new Error('Incorrect data: some fields are missing');
+export const isType = (type: string): type is Types => {
+  return Object.values(Types)
+    .map((v) => v.toString())
+    .includes(type);
 };
