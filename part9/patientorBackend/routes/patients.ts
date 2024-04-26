@@ -19,18 +19,30 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const newPatient = toNewPatient(req.body);
-  const addedPatient = patientsService.addPatient(newPatient);
-  res.send(addedPatient);
+  try {
+    const newPatient = toNewPatient(req.body);
+    const addedPatient = patientsService.addPatient(newPatient);
+    res.send(addedPatient);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).send(error.message);
+    }
+  }
 });
 
 router.post('/:id/entries', (req, res) => {
   const id = req.params.id;
   const patient = patientsService.getOne(id);
   if (patient) {
-    const newEntry = toNewEntry(req.body);
-    const addedEntry = patientsService.addEntry(patient, newEntry);
-    res.send(addedEntry);
+    try {
+      const newEntry = toNewEntry(req.body);
+      const addedEntry = patientsService.addEntry(patient, newEntry);
+      res.send(addedEntry);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).send(error.message);
+      }
+    }
   } else res.status(400).send;
 });
 

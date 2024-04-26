@@ -16,34 +16,36 @@ import {
 } from '../utils';
 
 const parseDescription = (description: unknown): string => {
-  if (!isString(description)) {
+  if (!description || !isString(description)) {
     throw new Error('Incorrect description: ' + description);
   }
   return description;
 };
 const parseDate = (date: unknown): string => {
-  if (!isString(date) || !isDate(date)) {
+  if (!date || !isString(date) || !isDate(date)) {
     throw new Error('Incorrect date: ' + date);
   }
   return date;
 };
 const parseSpecialist = (specialist: unknown): string => {
-  if (!isString(specialist)) {
+  if (!specialist || !isString(specialist)) {
     throw new Error('Incorrect specialist: ' + specialist);
   }
   return specialist;
 };
 
-const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> => {
-  if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
-    return [] as Array<Diagnosis['code']>;
+const parseDiagnosisCodes = (
+  diagnosisCodes: unknown,
+): Array<Diagnosis['code']> => {
+  if (!Array.isArray(diagnosisCodes)) {
+    throw new Error('Incorrect diagnosis codes: ' + diagnosisCodes);
   }
 
-  return object.diagnosisCodes as Array<Diagnosis['code']>;
+  return diagnosisCodes as Array<Diagnosis['code']>;
 };
 
 const parseType = (type: unknown): Types => {
-  if (!isString(type) || !isType(type)) {
+  if (!type || !isString(type) || !isType(type)) {
     throw new Error('Incorrect type: ' + type);
   }
   return type;
@@ -55,17 +57,17 @@ const parseDischarge = (discharge: unknown): Discharge => {
   }
 
   const { date, criteria } = discharge as Discharge;
-  if (!isString(date)) {
+  if (!date || !isString(date)) {
     throw new Error('Incorrect discharge date: ' + date);
   }
-  if (!isString(criteria)) {
+  if (!criteria || !isString(criteria)) {
     throw new Error('Incorrect discharge criteria: ' + criteria);
   }
   return { date, criteria };
 };
 
 const parseEmloyerName = (employerName: unknown): string => {
-  if (!isString(employerName)) {
+  if (!employerName || !isString(employerName)) {
     throw new Error('Incorrect specialist: ' + employerName);
   }
   return employerName;
@@ -76,10 +78,10 @@ const parseSickLeave = (sickLeave: unknown): SickLeave => {
   }
 
   const { startDate, endDate } = sickLeave as SickLeave;
-  if (!isString(startDate)) {
+  if (!startDate || !isString(startDate)) {
     throw new Error('Incorrect sick leave start date: ' + startDate);
   }
-  if (!isString(endDate)) {
+  if (!endDate || !isString(endDate)) {
     throw new Error('Incorrect sick leave end date: ' + endDate);
   }
   return { startDate, endDate };
@@ -89,6 +91,7 @@ const parseHealthCheckRating = (
   healthCheckRating: unknown,
 ): HealthCheckRating => {
   if (
+    !healthCheckRating ||
     !isNumber(healthCheckRating) ||
     !Object.values(HealthCheckRating).includes(healthCheckRating)
   ) {

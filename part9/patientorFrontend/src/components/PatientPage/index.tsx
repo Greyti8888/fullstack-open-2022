@@ -8,21 +8,24 @@ import { Patient } from "../../types";
 import patientService from "../../services/patients";
 
 import EntryDetails from "./EntryDetails";
+import NewEntry from "./NewEntry";
 
 const PatientPage = () => {
   const id = useParams().id;
   const [patient, setPatient] = useState<Patient | undefined>();
 
   useEffect(() => {
-    const fetchPatient = async () => {
-      const patient = await patientService.getOne(id);
-      setPatient(patient);
-    };
+    if (id) {
+      const fetchPatient = async () => {
+        const patient = await patientService.getOne(id);
+        setPatient(patient);
+      };
 
-    fetchPatient();
+      fetchPatient();
+    }
   }, [id]);
 
-  if (!patient) return null;
+  if (!id || !patient) return null;
 
   const genderIcon =
     patient.gender === "male" ? (
@@ -35,14 +38,15 @@ const PatientPage = () => {
 
   return (
     <div>
-      <h3>
+      <h2>
         {patient.name} {genderIcon}
-      </h3>
+      </h2>
       <div>gender: {patient.gender}</div>
       <div>born: {patient.dateOfBirth}</div>
       <div>ssn: {patient.ssn}</div>
       <div>occupation: {patient.occupation}</div>
-      <h4>entries</h4>
+      <h3>entries</h3>
+      <NewEntry patientId={id} />
       {patient.entries?.map((entry) => (
         <EntryDetails key={entry.id} entry={entry} />
       ))}
