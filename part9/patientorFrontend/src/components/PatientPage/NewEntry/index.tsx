@@ -1,40 +1,115 @@
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
-import { Box, Button, Stack, TextField, Alert } from "@mui/material";
+import { Box, Button, Stack, Alert, Select, MenuItem } from "@mui/material";
 
-import { EntryWithoutId } from "../../../types";
+import BaseEntryFrom from "./BaseEntryFrom";
+import HealthCheckEntryForm from "./HealthCheckEntryForm";
+import HostpitalForm from "./HostpitalEntryForm";
+import OccupationalHealthcare from "./OccupationalHealthcareEntry";
+
+import { Entry, EntryWithoutId, Types } from "../../../types";
+import { assertNever } from "../../../utils";
 
 import patientService from "../../../services/patients";
 
 interface Props {
   patientId: string;
+  entries: Entry[] | undefined;
 }
 
-interface FormValues {
+export interface BasicFormData {
   description: string;
   date: string;
   specialist: string;
-  diagnosisCodes: string;
+  diagnosisCodes?: string;
+}
+
+interface HealthCheckFormData extends BasicFormData {
+  type: Types.HealthCheck;
   healthCheckRating: string;
 }
 
-const NewEntry = ({ patientId }: Props) => {
+interface HospitalFormData extends BasicFormData {
+  type: Types.Hospital;
+  dischargeDate?: string;
+  dischargeCriteria?: string;
+}
+
+interface OccupationalHealthcareFormData extends BasicFormData {
+  type: Types.OccupationalHealthcare;
+  employerName: string;
+  sickLeaveStartDate?: string;
+  sickLeaveEndDate?: string;
+}
+
+export type FormData =
+  | HealthCheckFormData
+  | HospitalFormData
+  | OccupationalHealthcareFormData;
+
+const NewEntry = ({ patientId, entries }: Props) => {
   const [show, setShow] = useState<boolean>(false);
-  const { register, handleSubmit } = useForm<FormValues>();
+  const { register, handleSubmit, watch } = useForm<FormData>();
   const [notification, setNotification] = useState<string | null>(null);
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const entry: EntryWithoutId = {
-      type: "HealthCheck",
-      ...data,
-      diagnosisCodes: data.diagnosisCodes.split(", ") || undefined,
-      healthCheckRating: Number(data.healthCheckRating),
-    };
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const { type, ...restOfData } = data;
+    const diagnosisCodes = data.diagnosisCodes?.split(", ") || undefined;
+    let entry: EntryWithoutId;
+    switch (type) {
+      case Types.HealthCheck: {
+        entry = {
+          type,
+          ...restOfData,
+          diagnosisCodes,
+          healthCheckRating: Number(data.healthCheckRating),
+        };
+        break;
+      }
+      case Types.Hospital: {
+        const { dischargeDate, dischargeCriteria } = data;
+        let discharge;
+        if (dischargeDate && dischargeCriteria) {
+          discharge = {
+            date: dischargeDate,
+            criteria: dischargeCriteria,
+          };
+        }
+        entry = {
+          type,
+          ...restOfData,
+          diagnosisCodes,
+          discharge,
+        };
+        break;
+      }
+      case Types.OccupationalHealthcare: {
+        const { sickLeaveStartDate, sickLeaveEndDate, employerName } = data;
+        let sickLeave;
+        if (sickLeaveStartDate && sickLeaveEndDate) {
+          sickLeave = {
+            startDate: sickLeaveStartDate,
+            endDate: sickLeaveEndDate,
+          };
+        } else sickLeave = undefined;
+        entry = {
+          type,
+          ...restOfData,
+          employerName,
+          diagnosisCodes,
+          sickLeave,
+        };
+        break;
+      }
+      default:
+        return assertNever(type);
+    }
     try {
       const newEntry = await patientService.addEntry(entry, patientId);
       setNotification("Entry was added succesfuly");
       setTimeout(() => setNotification(null), 5000);
+      if (entries) entries.push(newEntry);
       console.log(newEntry);
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
@@ -58,6 +133,30 @@ const NewEntry = ({ patientId }: Props) => {
     }
   };
 
+  const baseForm = <BaseEntryFrom register={register} />;
+  const typeSpecificForm = ((type) => {
+    switch (type) {
+      case Types.HealthCheck:
+        return <HealthCheckEntryForm register={register} />;
+      case Types.Hospital:
+        return <HostpitalForm register={register} />;
+      case Types.OccupationalHealthcare:
+        return <OccupationalHealthcare register={register} />;
+      default:
+        return null;
+    }
+  })(watch("type"));
+
+  const typesSelection = (
+    <Select {...register("type")} defaultValue={Object.values(Types)[0]}>
+      {Object.values(Types).map((v) => (
+        <MenuItem key={v} value={v}>
+          {v}
+        </MenuItem>
+      ))}
+    </Select>
+  );
+
   if (show) {
     return (
       <Box
@@ -72,25 +171,9 @@ const NewEntry = ({ patientId }: Props) => {
         {notification && <Alert severity="info">{notification}</Alert>}
         <Stack spacing={2}>
           <h3>New Entry</h3>
-          <TextField
-            label={"Description"}
-            {...register("description")}
-          ></TextField>
-          <TextField label={"Date"} {...register("date")}></TextField>
-          <TextField
-            label={"Specialist"}
-            {...register("specialist")}
-          ></TextField>
-          <TextField
-            label={"Diagnosis Codes"}
-            {...register("diagnosisCodes")}
-          ></TextField>
-          <TextField
-            type="number"
-            label={"Health Check Rating"}
-            {...register("healthCheckRating")}
-          ></TextField>
-
+          {typesSelection}
+          {baseForm}
+          {typeSpecificForm}
           <Box display={"flex"} gap={1}>
             <Button type="submit" variant="contained" style={{ flexGrow: 5 }}>
               Add

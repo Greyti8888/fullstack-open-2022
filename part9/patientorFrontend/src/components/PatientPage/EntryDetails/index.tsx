@@ -1,4 +1,4 @@
-import { Entry } from "../../../types";
+import { Entry, Types } from "../../../types";
 
 import { assertNever } from "../../../utils";
 
@@ -11,15 +11,16 @@ interface Props {
 }
 
 const EntryDetails = ({ entry }: Props) => {
-  switch (entry.type) {
-    case "HealthCheck":
+  const { type } = entry;
+  switch (type) {
+    case Types.HealthCheck:
       return <HealthCheckEntry entry={entry} />;
-    case "Hospital":
+    case Types.Hospital:
       return <HospitalEntry entry={entry} />;
-    case "OccupationalHealthcare":
+    case Types.OccupationalHealthcare:
       return <OccupationalHealthcareEntry entry={entry} />;
     default:
-      return assertNever(entry);
+      return assertNever(type);
   }
 };
 

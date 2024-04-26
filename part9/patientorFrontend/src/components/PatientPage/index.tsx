@@ -46,7 +46,7 @@ const PatientPage = () => {
       <div>ssn: {patient.ssn}</div>
       <div>occupation: {patient.occupation}</div>
       <h3>entries</h3>
-      <NewEntry patientId={id} />
+      <NewEntry patientId={id} entries={patient.entries} />
       {patient.entries?.map((entry) => (
         <EntryDetails key={entry.id} entry={entry} />
       ))}
