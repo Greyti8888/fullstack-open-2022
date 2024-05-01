@@ -3,16 +3,18 @@ import { useParams } from "react-router-dom";
 
 import { Male, Female, Transgender } from "@mui/icons-material";
 
-import { Patient } from "../../types";
+import { Diagnosis, Patient } from "../../types";
+import DiagnosesContext from "./DiagnosesContext";
 
 import patientService from "../../services/patients";
+import diagnosesService from "../../services/diagnoses";
 
 import EntryDetails from "./EntryDetails";
 import NewEntry from "./NewEntry";
-
 const PatientPage = () => {
   const id = useParams().id;
-  const [patient, setPatient] = useState<Patient | undefined>();
+  const [patient, setPatient] = useState<Patient>();
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>();
 
   useEffect(() => {
     if (id) {
@@ -24,6 +26,14 @@ const PatientPage = () => {
       fetchPatient();
     }
   }, [id]);
+
+  useEffect(() => {
+    const fetchDiagnoses = async () => {
+      const diagnoses = await diagnosesService.getAll();
+      setDiagnoses(diagnoses);
+    };
+    fetchDiagnoses();
+  }, []);
 
   if (!id || !patient) return null;
 
@@ -37,20 +47,22 @@ const PatientPage = () => {
     );
 
   return (
-    <div>
-      <h2>
-        {patient.name} {genderIcon}
-      </h2>
-      <div>gender: {patient.gender}</div>
-      <div>born: {patient.dateOfBirth}</div>
-      <div>ssn: {patient.ssn}</div>
-      <div>occupation: {patient.occupation}</div>
-      <h3>entries</h3>
-      <NewEntry patientId={id} entries={patient.entries} />
-      {patient.entries?.map((entry) => (
-        <EntryDetails key={entry.id} entry={entry} />
-      ))}
-    </div>
+    <DiagnosesContext.Provider value={diagnoses}>
+      <div>
+        <h2>
+          {patient.name} {genderIcon}
+        </h2>
+        <div>gender: {patient.gender}</div>
+        <div>born: {patient.dateOfBirth}</div>
+        <div>ssn: {patient.ssn}</div>
+        <div>occupation: {patient.occupation}</div>
+        <h3>entries</h3>
+        <NewEntry patient={patient} setPatient={setPatient} />
+        {patient.entries?.map((entry) => (
+          <EntryDetails key={entry.id} entry={entry} />
+        ))}
+      </div>
+    </DiagnosesContext.Provider>
   );
 };
 

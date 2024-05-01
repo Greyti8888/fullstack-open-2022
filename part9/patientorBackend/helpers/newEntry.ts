@@ -16,19 +16,19 @@ import {
 } from '../utils';
 
 const parseDescription = (description: unknown): string => {
-  if (!description || !isString(description)) {
+  if (!isString(description)) {
     throw new Error('Incorrect description: ' + description);
   }
   return description;
 };
 const parseDate = (date: unknown): string => {
-  if (!date || !isString(date) || !isDate(date)) {
+  if (!isString(date) || !isDate(date)) {
     throw new Error('Incorrect date: ' + date);
   }
   return date;
 };
 const parseSpecialist = (specialist: unknown): string => {
-  if (!specialist || !isString(specialist)) {
+  if (!isString(specialist)) {
     throw new Error('Incorrect specialist: ' + specialist);
   }
   return specialist;
@@ -45,7 +45,7 @@ const parseDiagnosisCodes = (
 };
 
 const parseType = (type: unknown): Types => {
-  if (!type || !isString(type) || !isType(type)) {
+  if (!isString(type) || !isType(type)) {
     throw new Error('Incorrect type: ' + type);
   }
   return type;
@@ -67,7 +67,7 @@ const parseDischarge = (discharge: unknown): Discharge => {
 };
 
 const parseEmloyerName = (employerName: unknown): string => {
-  if (!employerName || !isString(employerName)) {
+  if (!isString(employerName)) {
     throw new Error('Incorrect specialist: ' + employerName);
   }
   return employerName;
@@ -91,7 +91,6 @@ const parseHealthCheckRating = (
   healthCheckRating: unknown,
 ): HealthCheckRating => {
   if (
-    !healthCheckRating ||
     !isNumber(healthCheckRating) ||
     !Object.values(HealthCheckRating).includes(healthCheckRating)
   ) {

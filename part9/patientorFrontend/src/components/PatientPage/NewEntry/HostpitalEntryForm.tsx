@@ -1,34 +1,37 @@
+import { useState } from "react";
 import { UseFormRegister } from "react-hook-form";
 import { FormControlLabel, Switch, TextField } from "@mui/material";
 
 import { FormData } from ".";
-import { useState } from "react";
-
 interface Props {
   register: UseFormRegister<FormData>;
 }
 
 const HostpitalForm = ({ register }: Props) => {
   const [checked, setChecked] = useState(false);
-  const handleSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setChecked(e.target.checked);
-  };
 
   return (
     <>
       <FormControlLabel
-        control={<Switch checked={checked} onChange={handleSwitch} />}
+        control={
+          <Switch
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+          />
+        }
         label="Discharge"
       />
       {checked && (
         <>
           <TextField
-            label={"Discharge Date"}
+            label="Discharge Date"
+            type="date"
             required
+            InputLabelProps={{ shrink: true }}
             {...register("dischargeDate")}
           />
           <TextField
-            label={"Discharge Criteria"}
+            label="Discharge Criteria"
             required
             {...register("dischargeCriteria")}
           />

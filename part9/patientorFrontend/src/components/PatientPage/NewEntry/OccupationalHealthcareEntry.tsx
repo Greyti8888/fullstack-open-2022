@@ -29,13 +29,17 @@ const OccupationalHealthcare = ({ register }: Props) => {
       {checked && (
         <>
           <TextField
+            type="date"
             label={"Sick Leave Start Date"}
             required
+            InputLabelProps={{ shrink: true }}
             {...register("sickLeaveStartDate")}
           />
           <TextField
+            type="date"
             label={"Sick Leave End Date"}
             required
+            InputLabelProps={{ shrink: true }}
             {...register("sickLeaveEndDate")}
           />
         </>

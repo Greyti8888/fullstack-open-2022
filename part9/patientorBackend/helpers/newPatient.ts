@@ -3,31 +3,31 @@ import { NewPatient } from '../types';
 import { isDate, isGender, isString } from '../utils';
 
 const parseName = (name: unknown): string => {
-  if (!name || !isString(name)) {
+  if (!isString(name)) {
     throw new Error('Incorrect name: ' + name);
   }
   return name;
 };
 const parseDateOfBirth = (dateOfBirth: unknown): string => {
-  if (!dateOfBirth || !isString(dateOfBirth) || !isDate(dateOfBirth)) {
+  if (!isString(dateOfBirth) || !isDate(dateOfBirth)) {
     throw new Error('Incorrect date of birth: ' + dateOfBirth);
   }
   return dateOfBirth;
 };
 const parseGender = (gender: unknown): string => {
-  if (!gender || !isString(gender) || !isGender(gender)) {
+  if (!isString(gender) || !isGender(gender)) {
     throw new Error('Incorrect gender: ' + gender);
   }
   return gender;
 };
 const parseSSN = (ssn: unknown): string => {
-  if (!ssn || !isString(ssn)) {
+  if (!isString(ssn)) {
     throw new Error('Incorrect ssn: ' + ssn);
   }
   return ssn;
 };
 const parseOcupation = (ocupation: unknown): string => {
-  if (!ocupation || !isString(ocupation)) {
+  if (!isString(ocupation)) {
     throw new Error('Incorrect ssn: ' + ocupation);
   }
   return ocupation;

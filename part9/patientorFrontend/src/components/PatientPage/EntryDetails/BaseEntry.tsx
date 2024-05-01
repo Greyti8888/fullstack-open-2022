@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 
-import { Diagnosis, Entry } from "../../../types";
-
-import diagnosesService from "../../../services/diagnoses";
+import { Entry } from "../../../types";
+import DiagnosesContext from "../DiagnosesContext";
 
 interface Props {
   entry: Entry;
@@ -10,15 +9,7 @@ interface Props {
 }
 
 const BaseEntry = ({ entry, children }: Props) => {
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[] | undefined>();
-
-  useEffect(() => {
-    const fetchDiagnoses = async () => {
-      const diagnoses = await diagnosesService.getAll();
-      setDiagnoses(diagnoses);
-    };
-    fetchDiagnoses();
-  }, []);
+  const diagnoses = useContext(DiagnosesContext);
 
   const listOfDiagnoses = entry.diagnosisCodes && (
     <ul>

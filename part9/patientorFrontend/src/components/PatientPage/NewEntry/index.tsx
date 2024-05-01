@@ -1,28 +1,29 @@
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
-import { Box, Button, Stack, Alert, Select, MenuItem } from "@mui/material";
+import dayjs from "dayjs";
+import { Box, Button, Stack, Alert, MenuItem, TextField } from "@mui/material";
 
 import BaseEntryFrom from "./BaseEntryFrom";
 import HealthCheckEntryForm from "./HealthCheckEntryForm";
 import HostpitalForm from "./HostpitalEntryForm";
 import OccupationalHealthcare from "./OccupationalHealthcareEntry";
 
-import { Entry, EntryWithoutId, Types } from "../../../types";
+import { EntryWithoutId, Patient, Types } from "../../../types";
 import { assertNever } from "../../../utils";
 
 import patientService from "../../../services/patients";
 
 interface Props {
-  patientId: string;
-  entries: Entry[] | undefined;
+  patient: Patient;
+  setPatient: React.Dispatch<React.SetStateAction<Patient | undefined>>;
 }
 
 export interface BasicFormData {
   description: string;
   date: string;
   specialist: string;
-  diagnosisCodes?: string;
+  diagnosisCodes?: string[];
 }
 
 interface HealthCheckFormData extends BasicFormData {
@@ -48,21 +49,28 @@ export type FormData =
   | HospitalFormData
   | OccupationalHealthcareFormData;
 
-const NewEntry = ({ patientId, entries }: Props) => {
+const NewEntry = ({ patient, setPatient }: Props) => {
   const [show, setShow] = useState<boolean>(false);
-  const { register, handleSubmit, watch } = useForm<FormData>();
+  const { register, handleSubmit, watch, control } = useForm<FormData>({
+    defaultValues: {
+      date: dayjs().format("YYYY-MM-DD"),
+      healthCheckRating: "",
+      diagnosisCodes: [],
+      dischargeDate: dayjs().format("YYYY-MM-DD"),
+      sickLeaveStartDate: dayjs().format("YYYY-MM-DD"),
+      sickLeaveEndDate: "",
+    },
+  });
   const [notification, setNotification] = useState<string | null>(null);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     const { type, ...restOfData } = data;
-    const diagnosisCodes = data.diagnosisCodes?.split(", ") || undefined;
     let entry: EntryWithoutId;
     switch (type) {
       case Types.HealthCheck: {
         entry = {
           type,
           ...restOfData,
-          diagnosisCodes,
           healthCheckRating: Number(data.healthCheckRating),
         };
         break;
@@ -79,7 +87,6 @@ const NewEntry = ({ patientId, entries }: Props) => {
         entry = {
           type,
           ...restOfData,
-          diagnosisCodes,
           discharge,
         };
         break;
@@ -97,7 +104,6 @@ const NewEntry = ({ patientId, entries }: Props) => {
           type,
           ...restOfData,
           employerName,
-          diagnosisCodes,
           sickLeave,
         };
         break;
@@ -106,11 +112,11 @@ const NewEntry = ({ patientId, entries }: Props) => {
         return assertNever(type);
     }
     try {
-      const newEntry = await patientService.addEntry(entry, patientId);
+      console.log(entry);
+      const newEntry = await patientService.addEntry(entry, patient.id);
       setNotification("Entry was added succesfuly");
       setTimeout(() => setNotification(null), 5000);
-      if (entries) entries.push(newEntry);
-      console.log(newEntry);
+      setPatient({ ...patient, entries: patient.entries?.concat(newEntry) });
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         if (e?.response?.data && typeof e?.response?.data === "string") {
@@ -133,30 +139,6 @@ const NewEntry = ({ patientId, entries }: Props) => {
     }
   };
 
-  const baseForm = <BaseEntryFrom register={register} />;
-  const typeSpecificForm = ((type) => {
-    switch (type) {
-      case Types.HealthCheck:
-        return <HealthCheckEntryForm register={register} />;
-      case Types.Hospital:
-        return <HostpitalForm register={register} />;
-      case Types.OccupationalHealthcare:
-        return <OccupationalHealthcare register={register} />;
-      default:
-        return null;
-    }
-  })(watch("type"));
-
-  const typesSelection = (
-    <Select {...register("type")} defaultValue={Object.values(Types)[0]}>
-      {Object.values(Types).map((v) => (
-        <MenuItem key={v} value={v}>
-          {v}
-        </MenuItem>
-      ))}
-    </Select>
-  );
-
   if (show) {
     return (
       <Box
@@ -171,23 +153,58 @@ const NewEntry = ({ patientId, entries }: Props) => {
         {notification && <Alert severity="info">{notification}</Alert>}
         <Stack spacing={2}>
           <h3>New Entry</h3>
-          {typesSelection}
-          {baseForm}
-          {typeSpecificForm}
-          <Box display={"flex"} gap={1}>
-            <Button type="submit" variant="contained" style={{ flexGrow: 5 }}>
-              Add
-            </Button>
-            <Button
-              type="button"
-              variant="contained"
-              color="error"
-              style={{ flexGrow: 1 }}
-              onClick={() => setShow(false)}
-            >
-              Cancel
-            </Button>
-          </Box>
+          <TextField
+            label="Select Entry Type"
+            select
+            defaultValue={""}
+            {...register("type")}
+          >
+            {Object.values(Types).map((v) => (
+              <MenuItem key={v} value={v}>
+                {v}
+              </MenuItem>
+            ))}
+          </TextField>
+          {watch("type") && (
+            <>
+              <BaseEntryFrom control={control} register={register} />
+              {((type) => {
+                switch (type) {
+                  case Types.HealthCheck:
+                    return (
+                      <HealthCheckEntryForm
+                        control={control}
+                        register={register}
+                      />
+                    );
+                  case Types.Hospital:
+                    return <HostpitalForm register={register} />;
+                  case Types.OccupationalHealthcare:
+                    return <OccupationalHealthcare register={register} />;
+                  default:
+                    return null;
+                }
+              })(watch("type"))}
+              <Box display={"flex"} gap={1}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  style={{ flexGrow: 5 }}
+                >
+                  Add
+                </Button>
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="error"
+                  style={{ flexGrow: 1 }}
+                  onClick={() => setShow(false)}
+                >
+                  Cancel
+                </Button>
+              </Box>
+            </>
+          )}
         </Stack>
       </Box>
     );
